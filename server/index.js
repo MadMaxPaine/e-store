@@ -4,13 +4,15 @@ const cors = require('cors');
 const sequelize = require('./db');
 const model = require('./models/models');
 const { parse } = require('dotenv');
+const router = require('./routes/index');
+
 const app = express();
 const PORT = process.env.PORT || 7000;
-
+app.use('/api', router);
 app.use(cors());
 app.use(express.json());
-app.get('/',(req,res)=>{
- res.status(200).json({message:'Working!!!'});
+app.get('/', (req, res) => {
+ res.status(200).json({ message: 'Working!!!' });
 });
 
 const start = async () => {
