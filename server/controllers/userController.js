@@ -1,3 +1,4 @@
+const ApiError = require('../error/ApiErrors');
 class UserController {
  async regestration(req, res) {
 
@@ -5,8 +6,9 @@ class UserController {
  async login(req, res) {
 
  }
- async check(req, res) {
-  const {id} = req.query;
+ async check(req, res, next) {  
+  const { id } = req.query;
+  if (!id) { return next(ApiError.badRequest("No Id")); }
   res.json({ message: id });
  }
 }
