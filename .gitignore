@@ -5,4 +5,4 @@ server/node_modules
 server/*.env
 
 #Static
-server/static
+server/static/*.*
