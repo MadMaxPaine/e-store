@@ -4,5 +4,5 @@ server/node_modules
 #.env
 server/*.env
 
-#Static
-server/static/*.*
+#static_folder
+server/static/*.jpg
