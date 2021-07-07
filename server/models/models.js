@@ -19,8 +19,8 @@ const BasketDevice = sequlize.define('basket_device', {
 const Device = sequlize.define('device', {
  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
  name: { type: DataTypes.STRING, unique: true, allowNull: false },
- price: { type: DataTypes.INTEGER, unique: true, allowNull: false },
- rating: { type: DataTypes.INTEGER, unique: true, allowNull: false },
+ price: { type: DataTypes.INTEGER, allowNull: false },
+ rating: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
  img: { type: DataTypes.STRING, allowNull: false },
 });
 
@@ -75,7 +75,7 @@ Device.hasMany(BasketDevice);
 BasketDevice.belongsTo(Device)
 
 //device_info
-Device.hasMany(DeviceInfo);
+Device.hasMany(DeviceInfo, { as: 'info' });
 DeviceInfo.belongsTo(Device);
 
 //To many

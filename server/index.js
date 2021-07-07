@@ -1,6 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const fileUpload = require('express-fileupload');
+const path = require('path');
 const sequelize = require('./db');
 const model = require('./models/models');
 const { parse } = require('dotenv');
@@ -9,9 +11,13 @@ const errorHandler = require('./middleware/errorHandlingMiddleware');
 
 const app = express();
 const PORT = process.env.PORT || 7000;
-app.use('/api', router);
-app.use(cors());
 app.use(express.json());
+app.use(express.static(path.resolve(__dirname, 'static')));
+app.use(fileUpload({}));
+app.use(cors());
+app.use('/api', router);
+
+
 app.get('/', (req, res) => {
  res.status(200).json({ message: 'Working!!!' });
 });
