@@ -1,66 +1,23 @@
 const { DataTypes } = require('sequelize');
 const sequlize = require('../db');
-
-const User = sequlize.define('user', {
- id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
- email: { type: DataTypes.STRING, unique: true },
- password: { type: DataTypes.STRING },
- role: { type: DataTypes.STRING, defaultValue: 'USER' }
-});
-
-const Basket = sequlize.define('basket', {
- id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-});
-
-const BasketDevice = sequlize.define('basket_device', {
- id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-});
-
-const Device = sequlize.define('device', {
- id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
- name: { type: DataTypes.STRING, unique: true, allowNull: false },
- price: { type: DataTypes.INTEGER, allowNull: false },
- rating: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
- img: { type: DataTypes.STRING, allowNull: false },
-});
-
-const Type = sequlize.define('type', {
- id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
- name: { type: DataTypes.STRING, unique: true, allowNull: false },
-});
-
-const Brand = sequlize.define('brand', {
- id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
- name: { type: DataTypes.STRING, unique: true, allowNull: false },
-});
-
-const Rating = sequlize.define('rating', {
- id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
- rate: { type: DataTypes.INTEGER, allowNull: false },
-});
-
-const DeviceInfo = sequlize.define('device_info', {
- id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
- title: { type: DataTypes.STRING, allowNull: false },
- description: { type: DataTypes.STRING, allowNull: false },
-});
-
-const TypeBrand = sequlize.define('typeBrand', {
- id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true }
-});
-
-const Comment = sequlize.define('comment', {
- id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
- parent_id: { type: DataTypes.INTEGER, allowNull: false, autoIncrement: 0 },
- comment: { type: DataTypes.STRING, allowNull: false }
-})
+//Models import
+const User = require('./userModel');
+const Basket = require('./basketModel');
+const BasketDevice = require('./basketDeviceModel');
+const Device = require('./deviceModel');
+const Type = require('./typeModel');
+const Brand = require('./brandModel');
+const Rating = require('./ratingModel');
+const DeviceInfo = require('./deviceInfoModel');
+const TypeBrand = require('./typeBrandModel');
+const Comment = require('./commentModel');
+const UserInfo = require('./userInfoModel');
 
 // Establish connections
 
 //user
 User.hasOne(Basket);
 Basket.belongsTo(User);
-
 User.hasMany(Rating);
 Rating.belongsTo(User);
 
@@ -89,10 +46,14 @@ Type.belongsToMany(Brand, { through: TypeBrand });
 Brand.belongsToMany(Type, { through: TypeBrand });
 
 //Comment
-User.hasMany(Comment);
-Comment.belongsTo(User);
+UserInfo.hasMany(Comment);
+Comment.belongsTo(UserInfo);
 Device.hasMany(Comment);
 Comment.belongsTo(Device);
+
+//user_info
+User.hasOne(UserInfo);
+UserInfo.belongsTo(User);
 
 module.exports = {
  User,
