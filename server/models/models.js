@@ -49,6 +49,12 @@ const TypeBrand = sequlize.define('typeBrand', {
  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true }
 });
 
+const Comment = sequlize.define('comment', {
+ id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+ parent_id: { type: DataTypes.INTEGER, allowNull: false, autoIncrement: 0 },
+ comment: { type: DataTypes.STRING, allowNull: false }
+})
+
 // Establish connections
 
 //user
@@ -81,6 +87,12 @@ DeviceInfo.belongsTo(Device);
 //To many
 Type.belongsToMany(Brand, { through: TypeBrand });
 Brand.belongsToMany(Type, { through: TypeBrand });
+
+//Comment
+User.hasMany(Comment);
+Comment.belongsTo(User);
+Device.hasMany(Comment);
+Comment.belongsTo(Device);
 
 module.exports = {
  User,
