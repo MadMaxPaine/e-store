@@ -46,8 +46,8 @@ Type.belongsToMany(Brand, { through: TypeBrand });
 Brand.belongsToMany(Type, { through: TypeBrand });
 
 //Comment
-UserInfo.hasMany(Comment);
-Comment.belongsTo(UserInfo);
+User.hasMany(Comment);
+Comment.belongsTo(User);
 Device.hasMany(Comment);
 Comment.belongsTo(Device);
 
