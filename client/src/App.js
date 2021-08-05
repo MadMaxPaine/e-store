@@ -1,0 +1,13 @@
+import 'antd/dist/antd.css';
+//import { Button } from 'antd';
+import { BrowserRouter } from 'react-router-dom';
+import AppRouter from './components/AppRouter';
+function App() {
+  return (
+    <BrowserRouter>
+      <AppRouter />
+    </BrowserRouter>
+  );
+}
+
+export default App;
