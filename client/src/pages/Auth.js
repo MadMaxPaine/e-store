@@ -36,9 +36,9 @@ const Auth = () => {
         <div>
          Has account? <NavLink to={LOGIN_ROUTE}>Enter here...</NavLink>
         </div>
-       }
-       <Button>{isLogin ? 'Enter' : 'Create account'}</Button>
+       }      
       </Row>
+      <Button className="align-self-end">{isLogin ? 'Enter' : 'Create account'}</Button>
      </Form>
     </Card>
    </div>
