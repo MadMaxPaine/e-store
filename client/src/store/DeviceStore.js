@@ -20,6 +20,10 @@ export default class DeviceStore {
    { id: 2, name: "Galaxy x", price: 25000, rating: 5, img: 'https://content2.rozetka.com.ua/goods/images/big/165919739.jpg' },
    { id: 3, name: "Galaxy x", price: 25000, rating: 5, img: 'https://content2.rozetka.com.ua/goods/images/big/165919739.jpg' },
    { id: 4, name: "Galaxy x", price: 25000, rating: 5, img: 'https://content2.rozetka.com.ua/goods/images/big/165919739.jpg' },
+   { id: 5, name: "Galaxy x", price: 25000, rating: 5, img: 'https://content2.rozetka.com.ua/goods/images/big/165919739.jpg' },
+   { id: 6, name: "Galaxy x", price: 25000, rating: 5, img: 'https://content2.rozetka.com.ua/goods/images/big/165919739.jpg' },
+   { id: 7, name: "Galaxy x", price: 25000, rating: 5, img: 'https://content2.rozetka.com.ua/goods/images/big/165919739.jpg' },
+   { id: 8, name: "Galaxy x", price: 25000, rating: 5, img: 'https://content2.rozetka.com.ua/goods/images/big/165919739.jpg' },
   ];
   this._selectedType = {};
   this._selectedBrand = {};
