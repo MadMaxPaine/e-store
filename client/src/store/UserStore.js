@@ -15,7 +15,7 @@ export default class UserStore {
   this._user = objUser;
  }
 
- get IsAuth() {
+ get isAuth() {
   return this._isAuth;
  }
  get User() {

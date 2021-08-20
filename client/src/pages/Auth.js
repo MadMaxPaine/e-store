@@ -42,7 +42,7 @@ const Auth = () => {
      </Form>
     </Card>
    </div>
-  </Container >
+  </Container>
 
  );
 }

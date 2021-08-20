@@ -17,7 +17,7 @@ const DevicePage = () => {
     <Image width={300} height={300} src={device.img} />
    </Col>
     <Col md={4}>
-     <Row ClassName="d-flex flex-column align-items-center">
+     <Row className="d-flex flex-column align-items-center">
       <h2>{device.name}</h2>
       <div
        className="d-flex justify-content-center align-items-center"
