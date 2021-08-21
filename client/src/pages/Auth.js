@@ -18,16 +18,15 @@ const Auth = observer(() => {
  const [password, setPassword] = useState('');
  const signIn = async () => {
   try {
-   let data;
    if (isLogin) {
-    data = await login(email, password);
+    await login(email, password);
    }
    else {
-    data = await registration(email, password);
-   }  
-    user.setUser(user);
-    user.setIsAuth(true);
-    history.push(SHOP_ROUTE);  
+    await registration(email, password);
+   }
+   user.setUser(user);
+   user.setIsAuth(true);
+   history.push(SHOP_ROUTE);
   }
   catch (e) {
    alert(e)

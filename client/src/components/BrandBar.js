@@ -7,7 +7,7 @@ export const BrandBar = observer(() => {
  return (
   <Row className="d-flex mt-2" >
    {
-    device.brands.map(brand =><Col md="auto"> <Card
+    device.brands.map(brand => <Col md="auto" key={brand.id}> <Card
      style={{ cursor: 'pointer' }}
      key={brand.id}
      onClick={() => device.setSelectedBrand(brand)}
