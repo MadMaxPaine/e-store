@@ -9,24 +9,29 @@ import { observer } from 'mobx-react-lite';
 import { useHistory } from 'react-router-dom';
 
 const NavBar = observer(() => {
- const { user } = useContext(ctx);
- const history = useHistory();
- return (
-  <Navbar bg="primary" variant="dark">
-   <Container>
-    <Nav.Link className="text-white" href={SHOP_ROUTE}>E-store</Nav.Link>
-    {
-     user.isAuth ?
-      <Nav className="al-auto" >
-       <Button onClick={() => history.push(ADMIN_ROUTE)}>Admin</Button>
-       <Button onClick={() => history.push(LOGIN_ROUTE)} style={{ "marginLeft": "10px" }}>Exit</Button>
-      </Nav> :
-      <Nav className="al-auto">
-       <Button onClick={() => user.setIsAuth(true)}>Authorization</Button>
-      </Nav>
-    }
-   </Container>
-  </Navbar>
- );
+  const { user } = useContext(ctx);
+  const history = useHistory();
+
+  const logOut = () => {
+    user.setUser({});
+    user.setIsAuth(false);
+  }
+  return (
+    <Navbar bg="primary" variant="dark">
+      <Container>
+        <Nav.Link className="text-white" href={SHOP_ROUTE}>E-store</Nav.Link>
+        {
+          user.isAuth ?
+            <Nav className="al-auto" >
+              <Button onClick={() => history.push(ADMIN_ROUTE)}>Admin</Button>
+              <Button onClick={() => logOut()} style={{ "marginLeft": "10px" }}>Exit</Button>
+            </Nav> :
+            <Nav className="al-auto">
+              <Button onClick={() => history.push(LOGIN_ROUTE)}>Authorization</Button>
+            </Nav>
+        }
+      </Container>
+    </Navbar>
+  );
 });
 export default NavBar;

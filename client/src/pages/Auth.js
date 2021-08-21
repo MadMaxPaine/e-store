@@ -1,15 +1,38 @@
-import React from 'react';
+import React, { useState, useContext } from 'react';
+import { ctx } from '../index';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useHistory } from 'react-router-dom';
 import Row from 'react-bootstrap/Row';
-import { LOGIN_ROUTE, REGISTRATION_ROUTE } from '../utils/consts';
-const Auth = () => {
+import { LOGIN_ROUTE, REGISTRATION_ROUTE, SHOP_ROUTE } from '../utils/consts';
+import { registration, login } from '../http/userAPI';
+import { observer } from 'mobx-react-lite';
+const Auth = observer(() => {
+ const { user } = useContext(ctx);
  const location = useLocation();
+ const history = useHistory();
  const isLogin = location.pathname === LOGIN_ROUTE;
-
+ const [email, setEmail] = useState('');
+ const [password, setPassword] = useState('');
+ const signIn = async () => {
+  try {
+   let data;
+   if (isLogin) {
+    data = await login(email, password);
+   }
+   else {
+    data = await registration(email, password);
+   }  
+    user.setUser(user);
+    user.setIsAuth(true);
+    history.push(SHOP_ROUTE);  
+  }
+  catch (e) {
+   alert(e)
+  }
+ }
  return (
   <Container
    className="d-flex justify-content-center align-items-center"
@@ -22,10 +45,15 @@ const Auth = () => {
       <Form.Control
        className="mt-3"
        placeholder="Enter you're email address..."
+       value={email}
+       onChange={e => setEmail(e.target.value)}
       />
       <Form.Control
        className="mt-3"
        placeholder="Enter you're password..."
+       value={password}
+       onChange={e => setPassword(e.target.value)}
+       type="password"
       />
       <Row className="d-flex justify-content-between mt-3 pl-3 pr-3" >
        {isLogin ?
@@ -36,14 +64,13 @@ const Auth = () => {
         <div>
          Has account? <NavLink to={LOGIN_ROUTE}>Enter here...</NavLink>
         </div>
-       }      
+       }
       </Row>
-      <Button className="align-self-end">{isLogin ? 'Enter' : 'Create account'}</Button>
+      <Button onClick={signIn} className="align-self-end">{isLogin ? 'Enter' : 'Create account'}</Button>
      </Form>
     </Card>
    </div>
   </Container>
-
- );
-}
+ )
+});
 export default Auth;
