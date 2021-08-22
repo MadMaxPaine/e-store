@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
-export const CreateType = ({show,onHide}) => {
+import { createType } from '../../http/deviceAPI';
+export const CreateType = ({ show, onHide }) => {
+ const [value, setValue] = useState('');
+ const addType = () => {
+  createType({ name: value }).then(data => setValue(''));
+  onHide();
+ }
  return (
   <Modal
    show={show}
-   hide={onHide}
+   onHide={onHide}
    aria-labelledby="contained-modal-title-vcenter"
    centered
   >
@@ -16,13 +22,15 @@ export const CreateType = ({show,onHide}) => {
    <Modal.Body>
     <Form>
      <Form.Control
+      value={value}
+      onChange={e => setValue(e.target.value)}
       placeholder={"Enter name of Type"}
      />
     </Form>
    </Modal.Body>
    <Modal.Footer>
     <Button variant="outline-danger" onClick={onHide}>Close</Button>
-    <Button variant="outline-success" onClick={onHide}>Add</Button>
+    <Button variant="outline-success" onClick={addType}>Add</Button>
    </Modal.Footer>
   </Modal>
  )
