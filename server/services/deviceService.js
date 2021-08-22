@@ -5,14 +5,15 @@ const ApiError = require('../error/ApiErrors');
 const { parse } = require('dotenv');
 
 module.exports.create = async function create(req, res, next) {
+
  try {
   let { name, price, brandId, typeId, info } = req.body;
-  const { img } = req.files;
+  const { image } = req.files;
   const fileName = uuid.v4() + '.jpg';
-  img.mv(path.resolve(__dirname, '..', 'static', fileName));
+  image.mv(path.resolve(__dirname, '..', 'static', fileName));
   const device = await Device.create({ name, price, brandId, typeId, img: fileName });
   if (info) {
-   info = json.parse(info);
+   info = JSON.parse(info);
    info.forEach(element => {
     DeviceInfo.create({
      title: element.title,
@@ -25,6 +26,7 @@ module.exports.create = async function create(req, res, next) {
   return res.json(device);
  }
  catch (e) {
+  console.log(e);
   next(ApiError.badRequest(e.message));
  }
 }
