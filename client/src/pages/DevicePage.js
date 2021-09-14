@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Image, Col, Container, Card, Button } from 'react-bootstrap';
+import { Row, Col, Container, Card, Button } from 'react-bootstrap';
+import Image from 'react-bootstrap/Image'
 import bigStar from '../assets/bigStar.png';
 import { useParams } from 'react-router-dom';
 import { fetchOneDevice } from '../http/deviceAPI';
-const DevicePage = () => {
+import { observer } from 'mobx-react-lite';
+const DevicePage = observer(() => {
  const [device, setDevice] = useState({ info: [] });
  const { id } = useParams();
  useEffect(() => {
-  fetchOneDevice(id).then(data => setDevice(data));
- });
+  fetchOneDevice(id)
+   .then(data => setDevice(data))
+ }, [id]);
  return (
-
   <Container className="mt-3">
    <Row><Col md={4}>
-    <Image width={300} height={300} src={process.env.REACT_APP_API_URL + device.img} />
+    {device.img && <Image width={300} height={300} src={process.env.REACT_APP_API_URL + device.img} />}
    </Col>
     <Col md={4}>
      <Row className="d-flex flex-column align-items-center">
@@ -47,5 +49,5 @@ const DevicePage = () => {
    </Row>
   </Container>
  );
-}
+});
 export default DevicePage;

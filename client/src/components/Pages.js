@@ -10,6 +10,11 @@ export const Pages = observer(() => {
   for (let index = 0; index < pagesCount; index++) {
     pages.push(index + 1);
   }
+  if (!pages.length) {
+    return (
+      <div></div>
+    );
+  }
   return (
     <Pagination className="d-flex mt-4" >
       <Pagination.Item
