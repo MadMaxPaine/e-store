@@ -16,7 +16,7 @@ export const Pages = observer(() => {
     );
   }
   return (
-    <Pagination className="d-flex mt-4" >
+    <Pagination className="d-flex mt-4 justify-content-center align-items-center" >
       <Pagination.Item
         className="m-1"
         activeLabel={false}
