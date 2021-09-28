@@ -12,6 +12,8 @@ const DeviceInfo = require('./deviceInfoModel');
 const TypeBrand = require('./typeBrandModel');
 const Comment = require('./commentModel');
 const UserInfo = require('./userInfoModel');
+const Token = require('./tokenModel');
+
 
 // Establish connections
 
@@ -55,6 +57,10 @@ Comment.belongsTo(Device);
 User.hasOne(UserInfo);
 UserInfo.belongsTo(User);
 
+//Token
+User.hasMany(Token);
+Token.belongsTo(User);
+
 module.exports = {
  User,
  Basket,
@@ -62,6 +68,7 @@ module.exports = {
  Device, Brand,
  Type, Rating,
  TypeBrand,
- DeviceInfo
+ DeviceInfo,
+ Token
 };
 
