@@ -1,19 +1,23 @@
-const jwt = require('jsonwebtoken');
-
+const ApiError = require('../error/ApiErrors');
+const { validateAccessToken } = require('../services/tokenService');
 
 module.exports = function (req, res, next) {
- if (req.method === 'OPTIONS') {
-  next();
- }
  try {
-  const token = req.headers.authorization.split(' ')[1];
-  if (!token) {
-   res.status(401).json({ message: 'User do not authorized!' })
+  const authorizationHeader = req.headers.authorization;
+  if (!authorizationHeader) {
+   return next(ApiError.unathourizedError());
   }
-  const decoded = jwt.verify(token, process.env.SECRET_KEY);
-  req.user = decoded;
+  const accessToken = authorizationHeader.split(' ')[1];
+  if (!accessToken) {
+   return next(ApiError.unathourizedError());
+  }
+  const userData = validateAccessToken(accessToken);
+  if (!userData) {
+   return next(ApiError.unathourizedError());
+  }
+  req.user = userData;
   next();
  } catch (e) {
-  res.status(401).json({ message: 'User do not authorized!' });
+  return next(ApiError.unathourizedError());
  }
 }
