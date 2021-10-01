@@ -7,7 +7,6 @@ import Button from 'react-bootstrap/Button';
 import { NavLink, useLocation, useHistory } from 'react-router-dom';
 import Row from 'react-bootstrap/Row';
 import { LOGIN_ROUTE, REGISTRATION_ROUTE, SHOP_ROUTE } from '../utils/consts';
-import { registration, login } from '../http/userAPI';
 import { observer } from 'mobx-react-lite';
 const Auth = observer(() => {
  const { user } = useContext(ctx);
@@ -19,13 +18,11 @@ const Auth = observer(() => {
  const signIn = async () => {
   try {
    if (isLogin) {
-    await login(email, password);
+    await user.login(email, password);
    }
    else {
-    await registration(email, password);
+    await user.registration(email, password);
    }
-   user.setUser(user);
-   user.setIsAuth(true);
    history.push(SHOP_ROUTE);
   }
   catch (e) {

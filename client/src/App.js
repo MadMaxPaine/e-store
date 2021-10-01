@@ -4,17 +4,14 @@ import { useContext, useEffect, useState } from 'react';
 import { ctx } from '.';
 import AppRouter from './components/AppRouter';
 import NavBar from './components/NavBar';
-import { check } from './http/userAPI';
 import { Spinner } from 'react-bootstrap';
 const App = observer(() => {
   const { user } = useContext(ctx);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    check().then(data => {
-      user.setUser(true);
-      user.setIsAuth(true);
+    if (localStorage.getItem('token')) {
+      user.checkAuth().finally(setLoading(false));
     }
-    ).finally(setLoading(false));
   }, [user]);
   if (loading) {
     return <Spinner animation={"grow"} />

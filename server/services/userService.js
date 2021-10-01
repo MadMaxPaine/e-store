@@ -13,15 +13,6 @@ const { User, Basket } = require('../models/models');
 const ApiError = require('../error/ApiErrors');
 const UserDto = require('../dtos/user-dtos');
 
-// const generrateJwt = (id, email, role) => {
-//   return jwt.sign({ id, email, role },
-//     process.env.SECRET_KEY,
-//     {
-//       expiresIn: '24h'
-//     });
-
-// }
-
 
 module.exports.registration = async function registration(req, res, next) {
   try {
@@ -62,7 +53,7 @@ module.exports.activate = async function activate(req, res, next) {
   try {
     const activationLink = req.params.link;
     const user = await User.findOne({ activationLink });
-    if (!user) { throw new ApiError.badRequest("Wrong activation link!"); }
+    if (!user) { throw ApiError.badRequest("Wrong activation link!"); }
     user.isActivated = true;
     await user.save();
     return res.redirect(process.env.CLIENT_URL);
@@ -75,6 +66,7 @@ module.exports.login = async function login(req, res, next) {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ where: { email } });
+    console.log(user);
     if (!user) {
       next(ApiError.internal('User not found!'));
     }
@@ -112,13 +104,13 @@ module.exports.logout = async function logout(req, res, next) {
 module.exports.refresh = async function refresh(req, res, next) {
   try {
     const { refreshToken } = req.cookies;
-    if (!refreshToken) {
-      throw new ApiError.unathourizedError();
+    if (!refreshToken) {      
+      throw ApiError.unathourizedError();
     }
     const userData = validateRefreshToken(refreshToken);
     const tokenFromDb = await findToken(refreshToken);
     if (!userData || !tokenFromDb) {
-      throw new ApiError.unathourizedError();
+      throw ApiError.unathourizedError();
     }
     const user = await User.findOne({ where: { id: userData.id } });
     const userDto = new UserDto(user);
@@ -143,8 +135,3 @@ module.exports.getUsers = async function getUsers(req, res, next) {
     next(e);
   }
 }
-
-// module.exports.check = async function check(req, res, next) {
-//   const token = generrateJwt(req.user.id, req.user.email, req.user.role);
-//   return res.json({ token });
-// }

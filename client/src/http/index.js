@@ -5,6 +5,7 @@ const $host = axios.create({
 });
 
 const $authhost = axios.create({
+ withCredentials: true,
  baseURL: process.env.REACT_APP_API_URL
 });
 
@@ -14,7 +15,37 @@ const authInterceptor = config => {
 }
 
 $authhost.interceptors.request.use(authInterceptor);
-//$authhost.interceptors.responce.use(authInterceptor);
+$authhost.interceptors.response.use((config) => config, async (error) => {
+ const originalReq = error.config;
+ if (error.response.status === 401 && error.config && !error._isRetry) {
+  originalReq._isRetry = true;
+  try {
+   const res = await axios.get('api/user/refresh', { withCredentials: true });
+   localStorage.setItem('token', res.data.accessToken);
+   $authhost.request(originalReq);
+  }
+  catch (e) {
+   console.log(e.response?.data?.message);
+  }
+ }
+ throw error;
+});
+$host.interceptors.request.use(authInterceptor);
+$host.interceptors.response.use((config) => config, async (error) => {
+ const originalReq = error.config;
+ if (error.response.status === 401 && error.config && !error._isRetry) {
+  originalReq._isRetry = true;
+  try {
+   const res = await axios.get('api/user/refresh', { withCredentials: true });
+   localStorage.setItem('token', res.data.accessToken);
+   $host.request(originalReq);
+  }
+  catch (e) {
+   console.log(e.response?.data?.message);
+  }
+ }
+ throw error;
+});
 
 export {
  $host,
