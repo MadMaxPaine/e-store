@@ -2,6 +2,9 @@ const ApiError = require('../error/ApiErrors');
 const { validateAccessToken } = require('../services/tokenService');
 
 module.exports = function (req, res, next) {
+ if (req.method === 'OPTIONS') {
+  next();
+ }
  try {
   const authorizationHeader = req.headers.authorization;
   if (!authorizationHeader) {

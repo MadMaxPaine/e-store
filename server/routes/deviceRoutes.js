@@ -4,7 +4,7 @@ const checkRoleMiddleware = require('../middleware/checkRoleMiddleware');
 
 const router = new Router();
 
-router.post('/', checkRoleMiddleware, deviceController.create);
+router.post('/', checkRoleMiddleware('ADMIN'), deviceController.create);
 router.get('/', deviceController.getAll);
 router.get('/:id', deviceController.getOne);
 

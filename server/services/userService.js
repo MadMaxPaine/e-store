@@ -1,12 +1,10 @@
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const uuid = require('uuid');
 const { validationResult } = require('express-validator');
 const mailService = require('./mailService');
 const { generateTokens,
   saveToken,
-  removeToken,
-  validateAccessToken,
+  removeToken,  
   validateRefreshToken,
   findToken } = require('./tokenService');
 const { User, Basket } = require('../models/models');
@@ -20,8 +18,8 @@ module.exports.registration = async function registration(req, res, next) {
     if (!errors.isEmpty()) {
       return next(ApiError.badRequest('Validation error', errors.array()));
     }
-    const { email, password, role } = req.body;
-    if (!email || !password) {
+    const { email, password } = req.body;
+    if (!email || !password ) {
       next(ApiError.badRequest('Wrong email or password'));
     }
     const candidate = await User.findOne({ where: { email } });
@@ -30,7 +28,7 @@ module.exports.registration = async function registration(req, res, next) {
     }
     const hashPassword = await bcrypt.hash(password, 5);
     const activationLink = uuid.v4();
-    const user = await User.create({ email, role, password: hashPassword, activationLink });
+    const user = await User.create({ email, password: hashPassword, activationLink });
     await mailService.sendActivationMail(email, `${process.env.API_URL}/api/user/activate/${activationLink}`);
     const basket = await Basket.create({ userId: user.id });
     const userDto = new UserDto(user);

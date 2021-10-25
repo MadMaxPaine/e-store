@@ -1,20 +1,27 @@
-const jwt = require('jsonwebtoken');
 const ApiError = require('../error/ApiErrors');
+const { validateAccessToken } = require('../services/tokenService');
 module.exports = function (role) {
  return function (req, res, next) {
   if (req.method === 'OPTIONS') {
    next();
   }
   try {
-   const token = req.headers.authorization.split(' ')[1];
-   if (!token) {
+   const authorizationHeader = req.headers.authorization;
+   if (!authorizationHeader) {
     return next(ApiError.unathourizedError());
    }
-   const decoded = jwt.verify(token, process.env.SECRET_KEY);
-   if (decoded.role !== role) {
+   const accessToken = authorizationHeader.split(' ')[1];
+   if (!accessToken) {
+    return next(ApiError.unathourizedError());
+   }
+   const userData = validateAccessToken(accessToken);
+   if (!userData) {
+    return next(ApiError.unathourizedError());
+   }
+   if (userData.role !== role) {
     return next(ApiError.forbidden());
    }
-   req.user = decoded;
+   req.user = userData;
    next();
   } catch (e) {
    return next(ApiError.unathourizedError());
