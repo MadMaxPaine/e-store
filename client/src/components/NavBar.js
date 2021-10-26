@@ -12,9 +12,9 @@ import { useHistory } from 'react-router-dom';
 const NavBar = observer(() => {
   const { user } = useContext(ctx);
   const history = useHistory();
-  const logOut = () => {
-    user.setUser({});
-    user.setIsAuth(false);
+  const logOut = async () => {
+    await user.logout().then(history.push(SHOP_ROUTE));
+    
   }
   return (
     <Navbar bg="primary" variant="primary" >
@@ -24,7 +24,7 @@ const NavBar = observer(() => {
           user.isAuth ?
             <Dropdown align="end" className="al-auto border rounded" style={{ padding: "1px" }}>
               <Button size="sm" variant="primary" onClick={() => logOut()} style={{ borderRight: "1px solid white" }}>Log out</Button>
-              <Dropdown.Toggle size="sm" variant="primary" style={{ marginLeft: "1px" }}/>
+              <Dropdown.Toggle size="sm" variant="primary" style={{ marginLeft: "1px" }} />
               <Dropdown.Menu align="end">
                 <Dropdown.Item onClick={() => history.push(SHOP_ROUTE)}>Store</Dropdown.Item>
                 <Dropdown.Item onClick={() => history.push(ADMIN_ROUTE)}>Admin panel</Dropdown.Item>
