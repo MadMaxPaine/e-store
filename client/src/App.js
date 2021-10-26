@@ -1,19 +1,18 @@
 import { observer } from 'mobx-react-lite';
 import { BrowserRouter } from 'react-router-dom';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect } from 'react';
 import { ctx } from '.';
 import AppRouter from './components/AppRouter';
 import NavBar from './components/NavBar';
 import { Spinner } from 'react-bootstrap';
 const App = observer(() => {
   const { user } = useContext(ctx);
-  const [loading, setLoading] = useState(true);
   useEffect(() => {
     if (localStorage.getItem('token')) {
-      user.checkAuth().finally(setLoading(false));
+      user.checkAuth();
     }
   }, [user]);
-  if (loading) {
+  if (user._isLoading) {
     return <Spinner animation={"grow"} />
   }
   return (
