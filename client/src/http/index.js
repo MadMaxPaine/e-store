@@ -30,22 +30,22 @@ $authhost.interceptors.response.use((config) => config, async (error) => {
  }
  throw error;
 });
-$host.interceptors.request.use(authInterceptor);
-$host.interceptors.response.use((config) => config, async (error) => {
- const originalReq = error.config;
- if (error.response.status === 401 && error.config && !error._isRetry) {
-  originalReq._isRetry = true;
-  try {
-   const res = await axios.get('api/user/refresh', { withCredentials: true });
-   localStorage.setItem('token', res.data.accessToken);
-   $host.request(originalReq);
-  }
-  catch (e) {
-   console.log(e.response?.data?.message);
-  }
- }
- throw error;
-});
+// $host.interceptors.request.use(authInterceptor);
+// $host.interceptors.response.use((config) => config, async (error) => {
+//  const originalReq = error.config;
+//  if (error.response.status === 401 && error.config && !error._isRetry) {
+//   originalReq._isRetry = true;
+//   try {
+//    const res = await axios.get('api/user/refresh', { withCredentials: true });
+//    localStorage.setItem('token', res.data.accessToken);
+//    $host.request(originalReq);
+//   }
+//   catch (e) {
+//    console.log(e.response?.data?.message);
+//   }
+//  }
+//  throw error;
+// });
 
 export {
  $host,
