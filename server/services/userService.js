@@ -4,28 +4,35 @@ const { validationResult } = require('express-validator');
 const mailService = require('./mailService');
 const { generateTokens,
   saveToken,
-  removeToken,  
+  removeToken,
   validateRefreshToken,
   findToken } = require('./tokenService');
 const { User, Basket } = require('../models/models');
 const ApiError = require('../error/ApiErrors');
 const UserDto = require('../dtos/user-dtos');
+const userInfoController = require('../controllers/userInfoController');
 
 
 module.exports.registration = async function registration(req, res, next) {
-  try {
+  try {   
+     
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return next(ApiError.badRequest('Validation error', errors.array()));
     }
-    const { email, password } = req.body;
-    if (!email || !password ) {
+    const { email, password, firstName, lastName, phone, gender } = req.body;
+    if (!email || !password) {
       next(ApiError.badRequest('Wrong email or password'));
+    }
+    console.log(req.body);
+    if (!firstName || !lastName || !phone) {
+      next(ApiError.badRequest('Wrong Name or Lastname or phone'));
     }
     const candidate = await User.findOne({ where: { email } });
     if (candidate) {
       next(ApiError.badRequest('User with current e-mail exists!'));
-    }
+    } 
+    await userInfoController.create(req);    
     const hashPassword = await bcrypt.hash(password, 5);
     const activationLink = uuid.v4();
     const user = await User.create({ email, password: hashPassword, activationLink });
@@ -102,7 +109,7 @@ module.exports.logout = async function logout(req, res, next) {
 module.exports.refresh = async function refresh(req, res, next) {
   try {
     const { refreshToken } = req.cookies;
-    if (!refreshToken) {      
+    if (!refreshToken) {
       throw ApiError.unathourizedError();
     }
     const userData = validateRefreshToken(refreshToken);
