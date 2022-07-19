@@ -5,8 +5,8 @@ const userRouter = require('./userRoutes');
 const typeRouter = require('./typeRoutes');
 const deviceRouter = require('./deviceRoutes');
 const brandRouter = require('./brandRoutes');
-const commentRouter = require('./commentRouter');
-const userInfoRouter = require('./userInfoRouter');
+const commentRouter = require('./commentRoutes');
+const userInfoRouter = require('./userInfoRoutes');
 
 router.use('/user', userRouter);
 router.use('/type', typeRouter);
