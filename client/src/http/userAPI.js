@@ -4,8 +4,9 @@ export const login = async function (email, password) {
  return $authhost.post('api/user/login', { email, password });
 
 }
-export const registration = async function (email, password) {
- return $host.post('api/user/registration', { email, password });
+export const registration = async function (regData) {
+ const {data} = await $host.post('api/user/registration', regData);
+ return data;
 }
 
 export const logout = async function () {

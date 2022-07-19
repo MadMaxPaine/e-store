@@ -40,9 +40,9 @@ export default class UserStore {
   }
  }
 
- async registration(email, password) {
-  try {
-   const res = await registration(email, password);
+ async registration(regData) {
+  try {   
+   const res = await registration(regData);
    localStorage.setItem('token', res.data.accessToken);
    this.setIsAuth(true);
    this.setUser(res.data.user);
