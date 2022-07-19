@@ -5,7 +5,6 @@ const UserInfo = sequlize.define('user_info', {
  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
  firstName: { type: DataTypes.STRING, allowNull: false },
  secondName: { type: DataTypes.STRING, allowNull: false },
- age: { type: DataTypes.INTEGER },
  gender: { type: DataTypes.STRING },
  avatar: { type: DataTypes.STRING },
  phone: { type: DataTypes.STRING, allowNull: false }

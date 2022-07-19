@@ -69,6 +69,7 @@ module.exports = {
  Type, Rating,
  TypeBrand,
  DeviceInfo,
- Token
+ Token,
+ UserInfo
 };
 
