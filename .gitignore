@@ -6,3 +6,4 @@ server/*.env
 
 #static_folder
 server/static/*.jpg
+server/static/*.png

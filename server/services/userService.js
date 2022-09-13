@@ -14,31 +14,34 @@ const userInfoController = require('../controllers/userInfoController');
 
 
 module.exports.registration = async function registration(req, res, next) {
-  try {   
-     
+  try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return next(ApiError.badRequest('Validation error', errors.array()));
     }
-    const { email, password, firstName, lastName, phone, gender } = req.body;
+    const { email, password } = req.body;
     if (!email || !password) {
       next(ApiError.badRequest('Wrong email or password'));
     }
     console.log(req.body);
-    if (!firstName || !lastName || !phone) {
+    if (!req.body.firstName || !req.body.lastName || !req.body.phone) {
       next(ApiError.badRequest('Wrong Name or Lastname or phone'));
     }
     const candidate = await User.findOne({ where: { email } });
     if (candidate) {
       next(ApiError.badRequest('User with current e-mail exists!'));
-    } 
-    await userInfoController.create(req);    
+    }
+    await userInfoController.create(req);
     const hashPassword = await bcrypt.hash(password, 5);
     const activationLink = uuid.v4();
     const user = await User.create({ email, password: hashPassword, activationLink });
     await mailService.sendActivationMail(email, `${process.env.API_URL}/api/user/activate/${activationLink}`);
     const basket = await Basket.create({ userId: user.id });
-    const userDto = new UserDto(user);
+    const userInfo = await userInfoController.getOne(user.id);
+    const firstName = userInfo.firstName;
+    const secondName = userInfo.secondName;
+    const avatar = userInfo.avatar;
+    const userDto = new UserDto(user, firstName, secondName, avatar);
     const token = generateTokens({ ...userDto });
     await saveToken(userDto.id, token.refreshToken);
     res.cookie('refreshToken',
@@ -71,7 +74,6 @@ module.exports.login = async function login(req, res, next) {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ where: { email } });
-    console.log(user);
     if (!user) {
       next(ApiError.internal('User not found!'));
     }
@@ -79,7 +81,11 @@ module.exports.login = async function login(req, res, next) {
     if (!comparePassword) {
       next(ApiError.internal('Wrong password'));
     }
-    const userDto = new UserDto(user);
+    const userInfo = await userInfoController.getOne(user.id);
+    const firstName = userInfo.firstName;
+    const secondName = userInfo.secondName;
+    const avatar = userInfo.avatar;
+    const userDto = new UserDto(user, firstName, secondName, avatar);
     const token = generateTokens({ ...userDto });
     await saveToken(userDto.id, token.refreshToken);
     res.cookie('refreshToken',
@@ -118,7 +124,11 @@ module.exports.refresh = async function refresh(req, res, next) {
       throw ApiError.unathourizedError();
     }
     const user = await User.findOne({ where: { id: userData.id } });
-    const userDto = new UserDto(user);
+    const userInfo = await userInfoController.getOne(user.id);
+    const firstName = userInfo.firstName;
+    const secondName = userInfo.secondName;
+    const avatar = userInfo.avatar;
+    const userDto = new UserDto(user, firstName, secondName, avatar);
     const token = generateTokens({ ...userDto });
     await saveToken(userDto.id, token.refreshToken);
     res.cookie('refreshToken',
