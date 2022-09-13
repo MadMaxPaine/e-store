@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Container, Card, Button } from 'react-bootstrap';
-import Image from 'react-bootstrap/Image'
-import bigStar from '../assets/bigStar.png';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import StarBorderPurple500RoundedIcon from '@mui/icons-material/StarBorderPurple500Rounded';
+import Grid from '@mui/material/Grid';
 import { useParams } from 'react-router-dom';
 import { fetchOneDevice } from '../http/deviceAPI';
 import { observer } from 'mobx-react-lite';
@@ -13,41 +18,53 @@ const DevicePage = observer(() => {
       .then(data => setDevice(data))
   }, [id]);
   return (
-    <Container className="mt-3 ">
-      <Row><Col md={4}>
-        {device.img && <Image width={300} height={300} src={process.env.REACT_APP_API_URL + device.img} />}
-      </Col>
-        <Col md={4}>
-          <Row className="d-flex flex-column align-items-center">
-            <h2>{device.name}</h2>
-            <div
-              className="d-flex justify-content-center align-items-center"
-              style={{ background: `url(${bigStar}) no-repeat center center`, width: 240, height: 240, backgroundSize: 'cover', fontSize: 64 }}
-            >
-              {device.rating}
-            </div>
-          </Row>
-        </Col>
-        <Col md={4}>
-          <Card
-            className="d-flex flex-column align-items-center justify-content-around"
-            style={{ width: 300, height: 300, fontSize: 32, border: '5px solid lightblue' }}
-          >
-            <h3>{device.price}</h3>
-            <Button>Add to basket</Button>
+    <Box>
+      <Grid
+        container
+        sx={{ direction: "flex", justifyContent: "center", alignItems: "center", mt: 1, b: 3 }}
+        spacing={1}
+      >
+        <Grid item md={3} >
+          <Card >
+            {device.img && <CardMedia
+              component="img"
+              height="300"
+              image={process.env.REACT_APP_API_URL + device.img}
+              alt={device.name}
+              sx={{ objectFit: "contain" }}
+            />}
+            <CardContent >
+              <Typography align="center" variant="h4" component="div" gutterBottom>{device.name}</Typography>
+            </CardContent>
           </Card>
-        </Col>
-      </Row>
-      <Row className="d-flex flex-column m-2">
-        <h2>Description</h2>
-        {device.info.map((info, index) =>
-          <Row
-            key={info.id}
-            style={{ background: index % 2 === 0 ? 'lightblue' : 'transparent', padding: 10 }}
-          >{info.title}:{info.description}</Row>
-        )}
-      </Row>
-    </Container>
+        </Grid>
+        <Grid item md={3}>
+          <Typography align="center" variant="h4" component="div" gutterBottom>
+            {device.rating}<StarBorderPurple500RoundedIcon sx={{ color: "blue" }} />
+          </Typography>
+        </Grid>
+        <Grid item md={3}>
+          <Typography variant="h4" component="div" align="center" style={{ width: 300, height: 300, fontSize: 32, border: '5px solid lightblue' }} gutterBottom>
+            {device.price}
+            <Button>Add to basket</Button>
+          </Typography>
+        </Grid>
+      </Grid>
+      <Grid container direction="row" sx={{ direction: "flex", justifyContent: "center", alignItems: "center", mt: 1 }}>
+        <Typography variant="h4" component="h2" gutterBottom>Description</Typography>
+      </Grid>
+      {device.info.map((info, index) =>
+        <Box
+          key={info.id}
+          style={{ background: index % 2 === 0 ? 'lightblue' : 'transparent', padding: 10 }}
+        >
+          <Grid container direction="row" sx={{ direction: "flex", justifyContent: "space-between", alignItems: "center", m: 1, pr: 2, pl: 2 }}>
+            <Box item md={6}>{info.title}</Box>
+            <Box item md={6}>{info.description}</Box>
+          </Grid>
+        </Box>
+      )}
+    </Box>
   );
 });
 export default DevicePage;

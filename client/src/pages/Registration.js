@@ -1,9 +1,27 @@
 import React, { useState, useContext } from 'react';
+import Cropper from "react-cropper";
+import "cropperjs/dist/cropper.css";
+import "../styles/cropper-avatar-shaper.css";
 import { ctx } from '../index';
-import Container from 'react-bootstrap/Container';
-import Form from 'react-bootstrap/Form';
-import Card from 'react-bootstrap/Card';
-import Button from 'react-bootstrap/Button';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import TextField from '@mui/material/TextField';
+import Stack from '@mui/material/Stack';
+import InputLabel from '@mui/material/InputLabel';
+import Stepper from '@mui/material/Stepper';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
+import Grid from '@mui/material/Grid';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 import { useHistory } from 'react-router-dom';
 import { SHOP_ROUTE } from '../utils/consts';
 import { observer } from 'mobx-react-lite';
@@ -16,128 +34,276 @@ const Registration = observer(() => {
  const [firstName, setFirstName] = useState('');
  const [lastName, setLastName] = useState('');
  const [phone, setPhone] = useState('');
- const [avatar, setAvatar] = useState(null);
  const [gender, setGender] = useState('');
  const [step, setStep] = useState(1);
+ const [open, setOpen] = React.useState(false);
+ const [cropData, setCropData] = useState(null);
+ const [cropper, setCropper] = useState(null);
+ const onChange = (e) => {
+  e.preventDefault();
+  let files;
+  if (e.dataTransfer) {
+   files = e.dataTransfer.files;
+  } else if (e.target) {
+   files = e.target.files;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+   setCropData(reader.result);
+  };
+  reader.readAsDataURL(files[0]);
+ };
+ const getCropData = () => {
+  if (typeof cropper !== "undefined") {
+   setCropData(cropper.getCroppedCanvas({ width: 150, height: 150 }).toDataURL("image/png"));
+  }
+  setOpen(false);
+ };
+ const handleOpen = () => {
+  setOpen(true);
+ };
+
+ const handleClose = () => {
+  setCropData(null);
+  setOpen(false);
+ };
  function goNextStep() {
-  setStep((step) => (+step < 5) ? step + 1 : 1);
+  setStep((step) => (+step < 4) ? step + 1 : 1);
  }
  function goPrevStep() {
   setStep((step) => (+step > 1) ? step - 1 : 1);
  }
  const registrate = () => {
   try {
-   let regData = new FormData()
+   let regData = new FormData();
    regData.append('email', email);
    regData.append('password', password);
    regData.append('firstName', firstName);
    regData.append('lastName', lastName);
    regData.append('phone', phone);
    regData.append('gender', gender);
-   regData.append('avatar', avatar)
+   regData.append('avatar', cropData);
    user.registration(regData).then(regData => {
-    console.log(regData);
     history.push(SHOP_ROUTE);
-   });   
+   });
   } catch (error) {
- alert(error);
-}
+   alert(error);
+  }
  };
-const selectAvatar = (e) => {
- setAvatar(e.target.files[0]);
-}
-return (
- <div>
-  <Container
-   className="d-flex justify-content-center align-items-center "
-   style={{ height: window.innerHeight - 54 }}  >
-   <Card style={{ width: 600 }} className="p-5">
-    <h2 className="m-auto">Registration</h2>
-    <Form className="d-flex flex-column">
-     <div>
-      {step === 1 && <>
-       <div className="d-flex flex-row">
-        <div className="d-flex flex-column">
-         <Form.Label className="mt-3">Name:</Form.Label>
-         <Form.Control
-          style={{ marginRight: "5px" }}
-          placeholder="Enter you're Name..."
-          value={firstName}
-          onChange={e => setFirstName(e.target.value)}
-         />
-        </div>
-        <div className="d-flex flex-column">
-         <Form.Label style={{ marginLeft: "5px" }} className="mt-3">Surname:</Form.Label>
-         <Form.Control
-          style={{ marginLeft: "5px" }}
-          placeholder="Enter you're Last name..."
-          value={lastName}
-          onChange={e => setLastName(e.target.value)}
-         />
-        </div>
-       </div>
-       <Form.Label className="mt-3">E-mail:</Form.Label>
-       <Form.Control
-        placeholder="Enter you're email address..."
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-       />
-      </>
-      }
-      {step === 2 && <>
-       <Form.Label className="mt-3">Password:</Form.Label>
-       <Form.Control
-        placeholder="Enter you're password..."
-        value={password}
-        onChange={e => setPassword(e.target.value)}
-        type="password" />
-       <Form.Control
-        className="mt-3"
-        placeholder="Confirm you're password..."
-        value={passwordConfirm}
-        onChange={e => setPasswordConfirm(e.target.value)}
-        type="password"
-       />
-      </>
-      }
-      {step === 3 && <>
-       <Form.Label className="mt-3">Gender:</Form.Label>
-       <Form.Control
-        className="mt-0"
-        placeholder="Enter you're gender..."
-        value={gender}
-        onChange={e => setGender(e.target.value)}
-        type="password" />
-       <Form.Label className="mt-3">Phone:</Form.Label>
-       <Form.Control
-        className="mt-0"
-        placeholder="Enter youre phone number..."
-        value={phone}
-        onChange={e => setPhone(e.target.value)}
-        type="password"
-       />
-      </>
-      }
-      {step !== 4 && <>
-       <Button className="mt-1" style={{ marginLeft: "5px" }} onClick={goPrevStep}>Prev</Button>
-       <Button className="mt-1" style={{ marginLeft: "5px" }} onClick={goNextStep}>Next</Button>
-      </>}
-      {step === 4 && <>
-       <div className="d-flex flex-column">
-        <Form.Label className="mt-3">Avatar:</Form.Label>
-        <Form.Control
-         type="file"
-         onChange={selectAvatar}
+ const steps = [
+  'Personal information',
+  'Security data',
+  'Create an account',
+ ];
+ return (
+  <Box
+   container
+   sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: window.innerHeight - 54, maxWidth: "100%" }}
+  >
+   <Card sx={{ p: 2 }}>
+    <CardContent>
+     <Typography variant="h4" sx={{ display: "flex", itemsAlign: "center", justifyContent: "center", mt: 1 }} component="h2" gutterBottom>
+      Registration
+     </Typography>
+     <Divider orientation="horizontal" sx={{ mt: 1 }} ></Divider>
+     {step === 1 && <>
+      <Stack direction="column" sx={{ display: "flex", itemsAlign: "center", justifyContent: "center", mt: 1 }}>
+       <Box item >
+        <TextField
+         sx={{ mt: 1 }}
+         size="small"
+         helperText="Please enter you're name"
+         id="userName"
+         value={firstName}
+         onChange={e => setFirstName(e.target.value)}
+         placeholder={"Name"}
+         label="Name"
         />
-        <Button onClick={registrate} className="align-self-end">Create account</Button>
-       </div>
-      </>}
-     </div>
-    </Form>
+        <TextField
+         sx={{ mt: 1 }}
+         size="small"
+         helperText="Please enter you're lastname"
+         id="userLastName"
+         value={lastName}
+         onChange={e => setLastName(e.target.value)}
+         placeholder={"Lastname"}
+         label="Lastname"
+        />
+       </Box>
+       <Box item >
+        <TextField
+         fullWidth
+         sx={{ mt: 1 }}
+         size="small"
+         helperText="Please enter you're e-mail"
+         id="deviceName"
+         value={email}
+         onChange={e => setEmail(e.target.value)}
+         placeholder={"Enter you're email address..."}
+         label="E-mail"
+        />
+       </Box>
+       <Box item >
+        <TextField
+         sx={{ mt: 1 }}
+         size="small"
+         helperText="Please enter you're gender"
+         id="gender"
+         value={gender}
+         onChange={e => setGender(e.target.value)}
+         placeholder={"Gender"}
+         label="Gender"
+        />
+       </Box>
+       <Box item >
+        <TextField
+         fullWidth
+         sx={{ mt: 1 }}
+         size="small"
+         helperText="Please enter you're phone number"
+         id="phone"
+         value={phone}
+         onChange={e => setPhone(e.target.value)}
+         placeholder={"Enter you're phone number..."}
+         label="Phone"
+        />
+       </Box>
+      </Stack>
+     </>}
+     {step === 2 && <>
+      <Stack direction="column" sx={{ display: "flex", itemsAlign: "center", justifyContent: "center", mt: 1 }}>
+       <Box item >
+        <TextField
+         fullWidth
+         sx={{ mt: 1 }}
+         size="small"
+         helperText="Please enter you're password"
+         id="password"
+         value={password}
+         onChange={e => setPassword(e.target.value)}
+         type={"password"}
+         label="Password"
+         placeholder={"Enter you're password..."}
+        />
+       </Box>
+       <Box item >
+        <TextField
+         fullWidth
+         sx={{ mt: 1 }}
+         size="small"
+         helperText="Please confirm you're password"
+         id="confirmPassword"
+         value={passwordConfirm}
+         onChange={e => setPasswordConfirm(e.target.value)}
+         type={"password"}
+         label="Confirm password"
+         placeholder={"Enter you're password again..."}
+        />
+       </Box>
+      </Stack>
+     </>
+     }
+     {step === 3 && <>
+      <Box item sx={{ display: "flex", itemsAlign: "center", justifyContent: "center", mt: 1 }}>
+       <InputLabel id="file-simple-select">Select you're avatar-image:</InputLabel>
+      </Box>
+      <Box item sx={{ display: "flex", itemsAlign: "center", justifyContent: "center", m: 1 }}>
+       <Button variant="contained" component="label" onClick={handleOpen}>
+        Select
+       </Button>
+      </Box>
+      {cropData !== null && open === false &&
+       <Box
+        item
+        sx={{ display: "flex", itemsAlign: "center", justifyContent: "center", m: 1 }}
+       ><Avatar alt="cropped" src={cropData} sx={{ width: 150, height: 150 }} />
+       </Box>
+      }
+      <Dialog
+       fullWidth
+       open={open}
+       onClose={handleClose}
+       aria-labelledby="alert-dialog-title"
+       aria-describedby="alert-dialog-description"
+      >
+       <DialogTitle id="alert-dialog-title">
+        {"Please edit you're future look:"}
+       </DialogTitle>
+       <DialogContent>
+        <Grid
+         container
+         direction="column"
+         alignItems="center"
+         sx={{ display: "flex", itemsAlign: "center", justifyContent: "center", mt: 1 }}
+        >
+         <Box
+          item
+         >
+          <Button variant="contained" component="label">
+           Upload<input hidden accept="image/*" multiple type="file" onChange={onChange} />
+          </Button>
+         </Box>
+         <Box
+          item
+          sx={{ mt: 1 }}
+         >
+          <Cropper
+           zoomable={true}
+           scalable={true}
+           aspectRatio={1}
+           initialAspectRatio={1}
+           preview=""
+           src={cropData}
+           viewMode={1}
+           minCropBoxHeight={"100"}
+           minCropBoxWidth={"100"}
+           background={false}
+           responsive={false}
+           autoCropArea={0}
+           dragMode="crop"
+           checkOrientation={false}
+           onInitialized={(instance) => {
+            setCropper(instance);
+           }}
+           guides={true}
+          />
+         </Box>
+        </Grid>
+       </DialogContent>
+       <DialogActions>
+        <Button onClick={handleClose}>Cancel</Button>
+        <Button onClick={getCropData} autoFocus>
+         Accept
+        </Button>
+       </DialogActions>
+      </Dialog>
+     </>}
+     <Divider orientation="horizontal" ></Divider>
+     <Box sx={{ display: "flex", itemsAlign: "center", justifyContent: "center", width: '100%', mt: 1 }}>
+      <Stepper activeStep={step - 1} alternativeLabel>
+       {steps.map((label) => (
+        <Step key={label}>
+         <StepLabel>{label}</StepLabel>
+        </Step>
+       ))}
+      </Stepper>
+     </Box>
+    </CardContent>
+    <CardActions sx={{ justifyContent: "flex-end" }}>
+     {step !== 3 && <>
+      {step !== 1 && <>
+       <Button variant="contained" sx={{ justifyContent: "flex-end" }} onClick={goPrevStep}>Prev</Button>
+      </>
+      }
+      <Button variant="contained" sx={{ justifyContent: "flex-end" }} onClick={goNextStep}>Next</Button>
+     </>}
+     {step === 3 && <>
+      <Button variant="contained" sx={{ justifyContent: "flex-end" }} onClick={goPrevStep}>Prev</Button>
+      <Button variant="contained" sx={{ itemsAlign: "center", justifyContent: "center" }} onClick={registrate}>Create account</Button>
+     </>}
+    </CardActions>
    </Card>
-  </Container>
- </div>
-
-);
+  </Box>
+ );
 });
 export default Registration;

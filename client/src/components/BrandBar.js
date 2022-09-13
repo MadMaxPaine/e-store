@@ -1,21 +1,39 @@
 import React, { useContext } from 'react';
 import { observer } from 'mobx-react-lite';
 import { ctx } from '../index';
-import { Row, Card, Col } from 'react-bootstrap';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import InputLabel from '@mui/material/InputLabel';
+import Box from '@mui/material/Box';
+import FormControl from '@mui/material/FormControl';
+
 export const BrandBar = observer(() => {
  const { device } = useContext(ctx);
+ const [brand, setBrand] = React.useState('');
+ const handleChange = (event) => {
+  setBrand(event.target.value);
+ }
  return (
-  <Row className="d-flex mt-2" >
-   {
-    device.brands.map(brand => <Col md="auto" key={brand.id}> <Card
-     style={{ cursor: 'pointer' }}
-     key={brand.id}
-     onClick={() => device.setSelectedBrand(brand)}
-     border={brand.id === device.selectedBrand.id ? 'primary' : 'light'}
+  <Box sx={{ minWidth: 200, maxWidth: "100%", mt: 1, textOverflow: "ellipsis", bgcolor: 'background.paper' }}>
+   <FormControl
+    fullWidth
+   >
+    <InputLabel id="brand-simple-select">Brands</InputLabel>
+    <Select
+     labelId="brand-simple-select"
+     id="brand-simple-select"
+     label="Brands"
+     value={brand}
+     sx={{ overflow: "hidden", textOverflow: "ellipsis", mr: 1 }}
+     onChange={handleChange}
     >
-     {brand.name}
-    </Card></Col>)
-   }
-  </Row>
+     {
+      device.brands.map(brand => <MenuItem value={brand.name} key={brand.id} onClick={() => device.setSelectedBrand(brand)}>
+       {brand.name}
+      </MenuItem>)
+     }
+    </Select>
+   </FormControl>
+  </Box>
  )
 });

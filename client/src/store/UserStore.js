@@ -8,7 +8,6 @@ export default class UserStore {
   this._isLoading = false;
   makeAutoObservable(this);
  }
-
  setIsAuth(bool) {
   this._isAuth = bool;
  }
@@ -18,7 +17,6 @@ export default class UserStore {
  setLoading(bool) {
   this._isLoading = bool;
  }
-
  get isAuth() {
   return this._isAuth;
  }
@@ -33,24 +31,22 @@ export default class UserStore {
    const res = await login(email, password);
    localStorage.setItem('token', res.data.accessToken);
    this.setIsAuth(true);
-   this.setUser(res.data.user);
-   console.log(res);
+   this.setUser(res.data.userDto);
   } catch (e) {
    console.log(e.response?.data?.message);
   }
  }
 
  async registration(regData) {
-  try {   
+  try {
    const res = await registration(regData);
    localStorage.setItem('token', res.data.accessToken);
    this.setIsAuth(true);
-   this.setUser(res.data.user);
+   this.setUser(res.data.userDto);
   } catch (e) {
    console.log(e.response?.data?.message);
   }
  }
-
  async logout() {
   try {
    await logout();
@@ -61,14 +57,13 @@ export default class UserStore {
    console.log(e.response?.data?.message);
   }
  }
-
  async checkAuth() {
   this.setLoading(true);
   try {
    const res = await axios.get(`${process.env.REACT_APP_API_URL}api/user/refresh`, { withCredentials: true });
    localStorage.setItem('token', res.data.accessToken);
    this.setIsAuth(true);
-   this.setUser(res.data.user);
+   this.setUser(res.data.userDto);
   } catch (e) {
    console.log(e);
   }

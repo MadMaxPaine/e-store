@@ -34,7 +34,6 @@ export const fetchDevices = async (typeId, brandId, page, limit = 5) => {
  return data;
 }
 
-
 export const fetchOneDevice = async (id) => {
  const { data } = await $host.get('api/device/' + id);
  return data;

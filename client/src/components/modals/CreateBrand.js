@@ -1,6 +1,24 @@
-import React, { useState } from 'react'
-import { Modal, Button, Form } from 'react-bootstrap';
+import React, { useState } from 'react';
+import Backdrop from '@mui/material/Backdrop';
+import Box from '@mui/material/Box';
+import Modal from '@mui/material/Modal';
+import Fade from '@mui/material/Fade';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import Divider from '@mui/material/Divider';
 import { createBrand } from '../../http/deviceAPI';
+const style = {
+ position: 'absolute',
+ top: '50%',
+ left: '50%',
+ transform: 'translate(-50%, -50%)',
+ bgcolor: 'background.paper',
+ boxShadow: 24,
+ p: 2,
+ maxWidth: "100%"
+};
+
 export const CreateBrand = ({ show, onHide }) => {
  const [value, setValue] = useState('');
  const addBrand = () => {
@@ -9,29 +27,42 @@ export const CreateBrand = ({ show, onHide }) => {
  }
  return (
   <Modal
-   show={show}
-   onHide={onHide}
-   aria-labelledby="contained-modal-title-vcenter"
-   centered
+   aria-labelledby="transition-modal-title"
+   aria-describedby="transition-modal-description"
+   open={show}
+   onClose={onHide}
+   closeAfterTransition
+   BackdropComponent={Backdrop}
+   BackdropProps={{
+    timeout: 500,
+   }}
   >
-   <Modal.Header>
-    <Modal.Title id="contained-modal-title-vcenter">
-     Adding Brand
-    </Modal.Title>
-   </Modal.Header>
-   <Modal.Body>
-    <Form>
-     <Form.Control
+   <Fade in={show}>
+    <Box sx={style} component="form" >
+     <Typography id="transition-modal-title" variant="h6" component="h2">
+      Adding Brand
+     </Typography>
+     <Divider orientation="horizontal"></Divider>
+     <TextField
+      sx={{ mt: 2 }}
+      size="small"
+      helperText="Please enter brand name"
+      id="brandAdd"
       value={value}
       onChange={e => setValue(e.target.value)}
       placeholder={"Enter name of Brand"}
+      label="Brand"
      />
-    </Form>
-   </Modal.Body>
-   <Modal.Footer>
-    <Button variant="outline-danger" onClick={onHide}>Close</Button>
-    <Button variant="outline-success" onClick={addBrand}>Add</Button>
-   </Modal.Footer>
+     <Divider orientation="horizontal" ></Divider>
+     <Box
+      container
+      sx={{ mt: 2, display: "flex", alignItems: "center", justifyContent: "center" }}
+     >
+      <Button variant="contained" sx={{ mr: 1 }} onClick={onHide}>Close</Button>
+      <Button variant="contained" sx={{ mr: 1 }} onClick={addBrand}>Add</Button>
+     </Box>
+    </Box>
+   </Fade>
   </Modal>
  )
 }
