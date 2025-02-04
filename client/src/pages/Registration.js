@@ -108,7 +108,7 @@ const Registration = observer(() => {
      <Divider orientation="horizontal" sx={{ mt: 1 }} ></Divider>
      {step === 1 && <>
       <Stack direction="column" sx={{ display: "flex", itemsAlign: "center", justifyContent: "center", mt: 1 }}>
-       <Box item >
+       <Grid item >
         <TextField
          sx={{ mt: 1 }}
          size="small"
@@ -129,8 +129,8 @@ const Registration = observer(() => {
          placeholder={"Lastname"}
          label="Lastname"
         />
-       </Box>
-       <Box item >
+       </Grid>
+       <Grid item >
         <TextField
          fullWidth
          sx={{ mt: 1 }}
@@ -142,8 +142,8 @@ const Registration = observer(() => {
          placeholder={"Enter you're email address..."}
          label="E-mail"
         />
-       </Box>
-       <Box item >
+       </Grid>
+       <Grid item >
         <TextField
          sx={{ mt: 1 }}
          size="small"
@@ -154,8 +154,8 @@ const Registration = observer(() => {
          placeholder={"Gender"}
          label="Gender"
         />
-       </Box>
-       <Box item >
+       </Grid>
+       <Grid item >
         <TextField
          fullWidth
          sx={{ mt: 1 }}
@@ -167,12 +167,12 @@ const Registration = observer(() => {
          placeholder={"Enter you're phone number..."}
          label="Phone"
         />
-       </Box>
+       </Grid>
       </Stack>
      </>}
      {step === 2 && <>
       <Stack direction="column" sx={{ display: "flex", itemsAlign: "center", justifyContent: "center", mt: 1 }}>
-       <Box item >
+       <Grid item >
         <TextField
          fullWidth
          sx={{ mt: 1 }}
@@ -185,8 +185,8 @@ const Registration = observer(() => {
          label="Password"
          placeholder={"Enter you're password..."}
         />
-       </Box>
-       <Box item >
+       </Grid>
+       <Grid item >
         <TextField
          fullWidth
          sx={{ mt: 1 }}
@@ -199,25 +199,25 @@ const Registration = observer(() => {
          label="Confirm password"
          placeholder={"Enter you're password again..."}
         />
-       </Box>
+       </Grid>
       </Stack>
      </>
      }
      {step === 3 && <>
-      <Box item sx={{ display: "flex", itemsAlign: "center", justifyContent: "center", mt: 1 }}>
+      <Grid item sx={{ display: "flex", itemsAlign: "center", justifyContent: "center", mt: 1 }}>
        <InputLabel id="file-simple-select">Select you're avatar-image:</InputLabel>
-      </Box>
-      <Box item sx={{ display: "flex", itemsAlign: "center", justifyContent: "center", m: 1 }}>
+      </Grid>
+      <Grid item sx={{ display: "flex", itemsAlign: "center", justifyContent: "center", m: 1 }}>
        <Button variant="contained" component="label" onClick={handleOpen}>
         Select
        </Button>
-      </Box>
+      </Grid>
       {cropData !== null && open === false &&
-       <Box
+       <Grid
         item
         sx={{ display: "flex", itemsAlign: "center", justifyContent: "center", m: 1 }}
        ><Avatar alt="cropped" src={cropData} sx={{ width: 150, height: 150 }} />
-       </Box>
+       </Grid>
       }
       <Dialog
        fullWidth
@@ -236,14 +236,14 @@ const Registration = observer(() => {
          alignItems="center"
          sx={{ display: "flex", itemsAlign: "center", justifyContent: "center", mt: 1 }}
         >
-         <Box
+         <Grid
           item
          >
           <Button variant="contained" component="label">
            Upload<input hidden accept="image/*" multiple type="file" onChange={onChange} />
           </Button>
-         </Box>
-         <Box
+         </Grid>
+         <Grid
           item
           sx={{ mt: 1 }}
          >
@@ -267,7 +267,7 @@ const Registration = observer(() => {
            }}
            guides={true}
           />
-         </Box>
+         </Grid>
         </Grid>
        </DialogContent>
        <DialogActions>

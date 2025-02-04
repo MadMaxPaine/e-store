@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { ctx } from '../index';
 import { NavLink, useHistory } from 'react-router-dom';
 import Box from '@mui/material/Box';
+import { Grid } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -37,7 +38,7 @@ const Login = observer(() => {
           </Typography>
           <Divider orientation="horizontal" sx={{ mt: 1 }} ></Divider>
           <Stack direction="column" sx={{ display: "flex", itemsAlign: "center", justifyContent: "center", mt: 1 }}>
-            <Box item >
+            <Grid item >
               <TextField
                 fullWidth
                 sx={{ mt: 1 }}
@@ -49,8 +50,8 @@ const Login = observer(() => {
                 placeholder={"Enter you're email address..."}
                 label="E-mail"
               />
-            </Box>
-            <Box item >
+            </Grid>
+            <Grid item >
               <TextField
                 fullWidth
                 sx={{ mt: 1 }}
@@ -63,7 +64,7 @@ const Login = observer(() => {
                 label="Password"
                 placeholder={"Enter you're password..."}
               />
-            </Box>
+            </Grid>
           </Stack>
           <Divider orientation="horizontal" ></Divider>
           <Box size="small" mt={1}>

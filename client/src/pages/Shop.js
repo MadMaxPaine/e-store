@@ -42,11 +42,11 @@ const Shop = observer(() => {
     item
     md={10}
    >
-    <Box container >
+    <Grid container >
      <Grid container direction="row" sx={{ verticalAlign: "left" }} p={1} ><BrandBar /></Grid>
      <Grid container direction="row" mt={2}><DeviceList /></Grid>
      <Grid container direction="row" mt={2} sx={{ alignItems: "center", justifyContent: "center", }} p={1}><Pages /></Grid>
-    </Box>
+    </Grid>
    </Grid>
   </Grid>
  );

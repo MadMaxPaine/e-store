@@ -1,70 +1,238 @@
-import React, { useEffect, useState } from 'react';
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import StarBorderPurple500RoundedIcon from '@mui/icons-material/StarBorderPurple500Rounded';
-import Grid from '@mui/material/Grid';
-import { useParams } from 'react-router-dom';
-import { fetchOneDevice } from '../http/deviceAPI';
-import { observer } from 'mobx-react-lite';
+import React, { useEffect, useState } from "react";
+import {
+  Box,
+  Card,
+  CardContent,
+  CardMedia,
+  Button,
+  Typography,
+  Grid,
+  Divider,
+  Rating,
+  CircularProgress,
+  useTheme,
+} from "@mui/material";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { useParams } from "react-router-dom";
+import { fetchOneDevice } from "../http/deviceAPI";
+import { observer } from "mobx-react-lite";
+
 const DevicePage = observer(() => {
   const [device, setDevice] = useState({ info: [] });
+  const [loading, setLoading] = useState(true);
   const { id } = useParams();
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === "dark";
+
   useEffect(() => {
+    let isMounted = true;
+    setLoading(true);
     fetchOneDevice(id)
-      .then(data => setDevice(data))
+      .then((data) => {
+        if (isMounted) {
+          setDevice(data);
+          setLoading(false);
+        }
+      })
+      .catch((error) => {
+        if (isMounted) {
+          setLoading(false);
+        }
+        console.error("Error fetching device:", error);
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
+
+  if (loading) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="50vh"
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
-    <Box>
+    <Box sx={{ maxWidth: "1200px", mx: "auto", p: 2 }}>
       <Grid
         container
-        sx={{ direction: "flex", justifyContent: "center", alignItems: "center", mt: 1, b: 3 }}
-        spacing={1}
+        spacing={3}
+        justifyContent="center"
+        alignItems="flex-start"
       >
-        <Grid item md={3} >
-          <Card >
-            {device.img && <CardMedia
-              component="img"
-              height="300"
-              image={process.env.REACT_APP_API_URL + device.img}
-              alt={device.name}
-              sx={{ objectFit: "contain" }}
-            />}
-            <CardContent >
-              <Typography align="center" variant="h4" component="div" gutterBottom>{device.name}</Typography>
+        {/* Картка із зображенням */}
+        <Grid item xs={12} md={4}>
+          <Card
+            sx={{
+              borderRadius: 3,
+              boxShadow: isDarkMode
+                ? "0 4px 12px rgba(255, 255, 255, 0.1)"
+                : "0 4px 12px rgba(0,0,0,0.1)",
+              backgroundColor: isDarkMode ? "#1e1e1e" : "#fff",
+              transition: "transform 0.3s",
+              "&:hover": { transform: "scale(1.03)" },
+            }}
+          >
+            {device.img && (
+              <CardMedia
+                component="img"
+                height="300"
+                image={process.env.REACT_APP_API_URL + device.img}
+                alt={device.name}
+                sx={{
+                  objectFit: "contain",
+                  background: isDarkMode ? "#2c2c2c" : "#f9f9f9",
+                  p: 2,
+                }}
+              />
+            )}
+            <CardContent>
+              <Typography
+                variant="h5"
+                align="center"
+                fontWeight={600}
+                sx={{ color: isDarkMode ? "#e0e0e0" : "#000" }}
+              >
+                {device.name}
+              </Typography>
             </CardContent>
           </Card>
         </Grid>
-        <Grid item md={3}>
-          <Typography align="center" variant="h4" component="div" gutterBottom>
-            {device.rating}<StarBorderPurple500RoundedIcon sx={{ color: "blue" }} />
-          </Typography>
+
+        {/* Рейтинг */}
+        <Grid item xs={12} md={4}>
+          <Box
+            sx={{
+              textAlign: "center",
+              background: isDarkMode ? "#2d2d2d" : "#f0f4f8",
+              borderRadius: 3,
+              p: 3,
+              boxShadow: isDarkMode
+                ? "0 4px 8px rgba(255, 255, 255, 0.1)"
+                : "0 4px 8px rgba(0,0,0,0.1)",
+            }}
+          >
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{ color: isDarkMode ? "#90caf9" : "#000" }}
+            >
+              Rating
+            </Typography>
+            <Rating
+              name="device-rating"
+              value={device.rating}
+              readOnly
+              precision={0.5}
+              size="large"
+              sx={{ color: "#ffb400" }}
+            />
+            <Typography
+              variant="body1"
+              mt={1}
+              sx={{ color: isDarkMode ? "#ccc" : "#000" }}
+            >
+              {device.rating} / 5
+            </Typography>
+          </Box>
         </Grid>
-        <Grid item md={3}>
-          <Typography variant="h4" component="div" align="center" style={{ width: 300, height: 300, fontSize: 32, border: '5px solid lightblue' }} gutterBottom>
-            {device.price}
-            <Button>Add to basket</Button>
-          </Typography>
+
+        <Grid item xs={12} md={4}>
+          <Box
+            sx={{
+              background: isDarkMode
+                ? "linear-gradient(135deg, #90caf9, #42a5f5)"
+                : "linear-gradient(135deg, #1976d2, #42a5f5)",
+              color: isDarkMode ? "#000" : "#fff",
+              p: 4,
+              borderRadius: 3,
+              boxShadow: isDarkMode
+                ? "0 4px 10px rgba(255, 255, 255, 0.2)"
+                : "0 4px 10px rgba(0,0,0,0.2)",
+              textAlign: "center",
+            }}
+          >
+            <Typography variant="h4" fontWeight={700}>
+              ${device.price}
+            </Typography>
+            <Button
+              variant="contained"
+              startIcon={<ShoppingCartIcon />}
+              sx={{
+                mt: 2,
+                background: isDarkMode ? "#1e1e1e" : "#fff",
+                color: isDarkMode ? "#90caf9" : "#1976d2",
+                borderRadius: 2,
+                "&:hover": {
+                  background: isDarkMode ? "#333" : "#e3f2fd",
+                },
+              }}
+            >
+              Add to Basket
+            </Button>
+          </Box>
         </Grid>
       </Grid>
-      <Grid container direction="row" sx={{ direction: "flex", justifyContent: "center", alignItems: "center", mt: 1 }}>
-        <Typography variant="h4" component="h2" gutterBottom>Description</Typography>
-      </Grid>
-      {device.info.map((info, index) =>
-        <Box
-          key={info.id}
-          style={{ background: index % 2 === 0 ? 'lightblue' : 'transparent', padding: 10 }}
+
+      <Box mt={4}>
+        <Typography
+          variant="h5"
+          fontWeight={600}
+          gutterBottom
+          sx={{ color: isDarkMode ? "#e0e0e0" : "#000" }}
         >
-          <Grid container direction="row" sx={{ direction: "flex", justifyContent: "space-between", alignItems: "center", m: 1, pr: 2, pl: 2 }}>
-            <Box item md={6}>{info.title}</Box>
-            <Box item md={6}>{info.description}</Box>
-          </Grid>
-        </Box>
-      )}
+          Description
+        </Typography>
+        {device.info.map((info, index) => (
+          <Box key={info.id}>
+            <Grid
+              container
+              spacing={2}
+              sx={{
+                p: 2,
+                background: isDarkMode
+                  ? index % 2 === 0
+                    ? "#424242"
+                    : "#303030"
+                  : index % 2 === 0
+                  ? "#e3f2fd"
+                  : "#f5f5f5",
+                borderRadius: 2,
+              }}
+            >
+              <Grid item xs={6}>
+                <Typography
+                  variant="body1"
+                  fontWeight={500}
+                  sx={{ color: isDarkMode ? "#fff" : "#000" }}
+                >
+                  {info.title}
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography
+                  variant="body2"
+                  sx={{ color: isDarkMode ? "#bdbdbd" : "#666" }}
+                >
+                  {info.description}
+                </Typography>
+              </Grid>
+            </Grid>
+            {index !== device.info.length - 1 && (
+              <Divider sx={{ backgroundColor: isDarkMode ? "#555" : "#ccc" }} />
+            )}
+          </Box>
+        ))}
+      </Box>
     </Box>
   );
 });
+
 export default DevicePage;
