@@ -7,6 +7,6 @@ const router = new Router();
 router.post("/", checkRoleMiddleware("ADMIN"), deviceController.create);
 router.get("/", deviceController.getAll);
 router.get("/:id", deviceController.getOne);
-router.delete("/", deviceController.deleteDevice);
+router.delete("/",checkRoleMiddleware("ADMIN"), deviceController.deleteDevice);
 
 module.exports = router;

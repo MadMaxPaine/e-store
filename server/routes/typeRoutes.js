@@ -5,6 +5,6 @@ const router = new Router();
 
 router.post("/", checkRoleMiddleware("ADMIN"), typeController.create);
 router.get("/", typeController.getAll);
-router.delete("/", typeController.deleteType);
+router.delete("/",checkRoleMiddleware("ADMIN"), typeController.deleteType);
 
 module.exports = router;

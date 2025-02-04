@@ -7,7 +7,7 @@ class UserController {
     this.activate = activate;
     this.refresh = refresh;
     this.getUsers = getUsers;
-    //this.check = check;
+    
   }
 }
 module.exports = new UserController();

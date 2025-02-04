@@ -79,11 +79,23 @@ module.exports.getOne = async function getOne(req, res) {
 
 module.exports.deleteDevice = async function deleteDevice(req, res, next) {
   try {
-    const { id } = req.body;
-    const device = await Device.findByPk(id);
+    const { name } = req.body;
+    console.log("Delete request for device name:", name);
+  
+    if (!name) {
+      return next(ApiError.badRequest("Device name is required")); 
+    }
+  
+    const device = await Device.findOne({ where: { name } });
+  
+    if (!device) {
+      return next(ApiError.badRequest("Device not found")); 
+    }
+  
     await device.destroy();
-    return res.json(device);
+    return res.json({ message: "Device deleted successfully", device });
   } catch (e) {
-    next(ApiError.badRequest(e.message));
+    console.error("Error deleting device:", e);
+    next(ApiError.badRequest(e.message)); 
   }
 };
