@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Divider from '@mui/material/Divider';
 import { createBrand } from '../../http/deviceAPI';
+import { Grid } from '@mui/material';
 const style = {
  position: 'absolute',
  top: '50%',
@@ -54,13 +55,13 @@ export const CreateBrand = ({ show, onHide }) => {
       label="Brand"
      />
      <Divider orientation="horizontal" ></Divider>
-     <Box
+     <Grid
       container
       sx={{ mt: 2, display: "flex", alignItems: "center", justifyContent: "center" }}
      >
       <Button variant="contained" sx={{ mr: 1 }} onClick={onHide}>Close</Button>
-      <Button variant="contained" sx={{ mr: 1 }} onClick={addBrand}>Add</Button>
-     </Box>
+      <Button variant="contained" sx={{ mr: 1 }} onClick={addBrand} disabled={!value}>Add</Button>
+     </Grid>
     </Box>
    </Fade>
   </Modal>
