@@ -1,8 +1,9 @@
 const jwt = require('jsonwebtoken');
 const { Token } = require('../models/models');
+const cfg=require('../configs/config');
 module.exports.generateTokens = generateTokens = (payload) => {
- const accessToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '15m' });
- const refreshToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '30d' });
+ const accessToken = jwt.sign(payload, cfg.jwt.secret, { expiresIn: cfg.jwt.accessTokenExpiresIn });
+ const refreshToken = jwt.sign(payload, cfg.jwt.secret, { expiresIn: cfg.jwt.refreshTokenExpiresIn });
  return { accessToken, refreshToken };
 }
 
@@ -25,7 +26,7 @@ module.exports.removeToken = async function removeToken(refreshToken) {
 
 module.exports.validateAccessToken = function validateAccessToken(accessToken) {
  try {
-  const userData = jwt.verify(accessToken, process.env.SECRET_KEY);
+  const userData = jwt.verify(accessToken, cfg.jwt.secret);
   return userData;
  } catch (e) {
   return null;
@@ -34,7 +35,7 @@ module.exports.validateAccessToken = function validateAccessToken(accessToken) {
 
 module.exports.validateRefreshToken = function validateRefreshToken(refreshToken) {
  try {
-  const userData = jwt.verify(refreshToken, process.env.SECRET_KEY);
+  const userData = jwt.verify(refreshToken, cfg.jwt.secret);
   return userData;
  } catch (e) {
   return null;

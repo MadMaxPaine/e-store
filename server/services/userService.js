@@ -11,6 +11,7 @@ const { User, Basket } = require('../models/models');
 const ApiError = require('../error/ApiErrors');
 const UserDto = require('../dtos/user-dtos');
 const userInfoController = require('../controllers/userInfoController');
+const cfg=require('../configs/config');
 
 
 module.exports.registration = async function registration(req, res, next) {
@@ -35,7 +36,7 @@ module.exports.registration = async function registration(req, res, next) {
     const hashPassword = await bcrypt.hash(password, 5);
     const activationLink = uuid.v4();
     const user = await User.create({ email, password: hashPassword, activationLink });
-    await mailService.sendActivationMail(email, `${process.env.API_URL}/api/user/activate/${activationLink}`);
+    await mailService.sendActivationMail(email, `${cfg.server.apiUrl}/api/user/activate/${activationLink}`);
     const basket = await Basket.create({ userId: user.id });
     const userInfo = await userInfoController.getOne(user.id);
     const firstName = userInfo.firstName;

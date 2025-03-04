@@ -1,4 +1,4 @@
-require("dotenv").config();
+const cfg= require('./configs/config');
 const express = require("express");
 const cors = require("cors");
 const fileUpload = require("express-fileupload");
@@ -6,13 +6,15 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const mysql = require("mysql2/promise");
 const sequelize = require("./db");
-const model = require("./models/models");
 const { parse } = require("dotenv");
 const router = require("./routes/index");
 const errorHandler = require("./middleware/errorHandlingMiddleware");
 
+
+
 const app = express();
-const PORT = process.env.PORT || 7000;
+const PORT = cfg.server.port || 7000;
+
 
 app.use(express.json());
 app.use(cookieParser());
@@ -27,7 +29,7 @@ app.use(fileUpload({}));
 app.use(
   cors({
     credentials: true,
-    origin: process.env.CLIENT_URL,
+    origin: cfg.server.clientUrl,
   })
 );
 app.use("/api", router);
@@ -41,10 +43,10 @@ app.use(errorHandler);
 const start = async () => {
   try {
     const connection = await mysql.createConnection({
-      host: process.env.DB_HOST,
-      port: process.env.DB_PORT,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
+      host: cfg.database.host,
+      port: cfg.database.port,
+      user: cfg.database.user,
+      password: cfg.database.password,
     });
     await connection.query(`CREATE DATABASE IF NOT EXISTS \`e-store\`;`);
     await sequelize.authenticate();

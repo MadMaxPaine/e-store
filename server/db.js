@@ -1,13 +1,14 @@
 const { Sequelize } = require('sequelize');
+const cfg= require('./configs/config');
 
 module.exports = new Sequelize(
- process.env.DB_NAME,
- process.env.DB_USER,
- process.env.DB_PASSWORD,
+ cfg.database.name,
+ cfg.database.user,
+ cfg.database.password, 
  {
-  dialect:"mysql",
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT
+  dialect:cfg.database.dialect,
+  host:cfg.database.host,
+  port:cfg.database.port,  
  }
 
 );
