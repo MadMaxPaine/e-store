@@ -1,9 +1,8 @@
 import React, { createContext, useContext, useState } from 'react';
 import { createTheme, ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 
-
+// Створюємо контекст для теми
 const ThemeContext = createContext();
-
 
 const lightTheme = createTheme({
   palette: {
@@ -11,16 +10,15 @@ const lightTheme = createTheme({
   },
 });
 
-
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
   },
 });
 
-
-export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState('light'); 
+// Оновлюємо ThemeProvider для коректного використання forwardRef
+export const ThemeProvider = React.forwardRef(({ children }, ref) => {
+  const [theme, setTheme] = useState('light');
 
   const toggleTheme = () => {
     setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
@@ -28,12 +26,13 @@ export const ThemeProvider = ({ children }) => {
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      <MuiThemeProvider theme={theme === 'dark' ? darkTheme : lightTheme}>
+      {/* Передаємо ref до MuiThemeProvider, щоб він підтримував реф */}
+      <MuiThemeProvider theme={theme === 'dark' ? darkTheme : lightTheme} ref={ref}>
         {children}
       </MuiThemeProvider>
     </ThemeContext.Provider>
   );
-};
+});
 
-
+// Хук для доступу до контексту теми
 export const useTheme = () => useContext(ThemeContext);

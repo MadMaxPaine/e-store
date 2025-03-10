@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import {  useNavigate } from "react-router-dom";
 import {
   Box,
   Card,
@@ -12,10 +13,14 @@ import {
   CircularProgress,
   useTheme,
 } from "@mui/material";
+import { 
+  BASKET_ROUTE
+} from "../utils/consts";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useParams } from "react-router-dom";
 import { fetchOneDevice } from "../http/deviceAPI";
 import { observer } from "mobx-react-lite";
+import { ctx } from "../store/context"; // Import your context for the basket
 
 const DevicePage = observer(() => {
   const [device, setDevice] = useState({ info: [] });
@@ -23,7 +28,8 @@ const DevicePage = observer(() => {
   const { id } = useParams();
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
-
+  const { basket } = useContext(ctx); // Get basket from context
+  const history = useNavigate(ctx);
   useEffect(() => {
     let isMounted = true;
     setLoading(true);
@@ -45,6 +51,12 @@ const DevicePage = observer(() => {
       isMounted = false;
     };
   }, [id]);
+
+  // Add item to the basket
+  const addToBasket = () => {
+    basket.addItem(device); // Call addItem from basket store
+    history(BASKET_ROUTE);
+  };
 
   if (loading) {
     return (
@@ -174,6 +186,7 @@ const DevicePage = observer(() => {
                   background: isDarkMode ? "#333" : "#e3f2fd",
                 },
               }}
+              onClick={addToBasket} // Add to basket handler
             >
               Add to Basket
             </Button>

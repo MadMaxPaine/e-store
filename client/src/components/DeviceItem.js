@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { DEVICE_ROUTE } from '../utils/consts';
 import {
   Card,
@@ -17,7 +17,7 @@ import {
 import StarIcon from '@mui/icons-material/Star';
 
 export const DeviceItem = ({ device }) => {
-  const history = useHistory();
+  const history = useNavigate();
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === 'dark'; 
 
@@ -112,7 +112,7 @@ export const DeviceItem = ({ device }) => {
           <Button
             variant="contained"
             size="medium"
-            onClick={() => history.push(`${DEVICE_ROUTE}/${device.id}`)}
+            onClick={() => history(`${DEVICE_ROUTE}/${device.id}`)}
             sx={{
               background: isDarkMode
                 ? 'linear-gradient(45deg, #90caf9, #42a5f5)' 

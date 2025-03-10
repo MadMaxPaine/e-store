@@ -31,8 +31,7 @@ $authhost.interceptors.response.use(
         const res = await axios.get("api/user/refresh", {
           withCredentials: true,
         });
-        localStorage.setItem("token", res.data.accessToken);
-
+        localStorage.setItem("token", res.data.accessToken);        
         return $authhost.request(originalReq);
       } catch (e) {
         console.log("Error refreshing token", e.response?.data?.message);

@@ -3,11 +3,11 @@ import { TypeBar } from '../components/TypeBar';
 import { BrandBar } from '../components/BrandBar';
 import { DeviceList } from '../components/DeviceList';
 import { observer } from 'mobx-react-lite';
-import { ctx } from '../index';
+import { ctx } from '../store/context';
 import { fetchBrands, fetchTypes, fetchDevices } from '../http/deviceAPI';
 import { Pages } from '../components/Pages';
 import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
+
 
 const Shop = observer(() => {
  const { device } = useContext(ctx);

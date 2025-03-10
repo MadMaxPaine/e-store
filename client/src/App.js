@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { BrowserRouter } from 'react-router-dom';
 import { CircularProgress, CssBaseline } from '@mui/material';
-import { ctx } from '.';
+import { ctx } from './store/context';
 import AppRouter from './components/AppRouter';
 import NavBar from './components/NavBar';
 import { ThemeProvider } from './styles/theme-context'; // Імпортуємо ThemeProvider
@@ -13,9 +13,19 @@ const App = observer(() => {
   const { theme, toggleTheme } = useTheme(); // Використовуємо контекст теми для доступу до поточної теми та функції переключення
 
   useEffect(() => {
-    if (localStorage.getItem('token')) {
-      user.checkAuth();
-    }
+    const authenticateUser = async () => {
+      if (localStorage.getItem('token')) {
+        try {
+          await user.checkAuth();
+        } catch (error) {
+          console.error('Authentication error:', error);
+          localStorage.removeItem('token'); // Очистити токен при помилці
+          user.setIsAuth(false); // Встановити аутентифікацію як false
+        }
+      }
+    };
+
+    authenticateUser();
   }, [user]);
 
   if (user._isLoading) {

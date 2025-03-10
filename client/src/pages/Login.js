@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
-import { ctx } from '../index';
-import { NavLink, useHistory } from 'react-router-dom';
+import { ctx } from '../store/context';
+import { NavLink, useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import { Grid } from '@mui/material';
 import Card from '@mui/material/Card';
@@ -15,13 +15,13 @@ import { REGISTRATION_ROUTE, SHOP_ROUTE } from '../utils/consts';
 import { observer } from 'mobx-react-lite';
 const Login = observer(() => {
   const { user } = useContext(ctx);
-  const history = useHistory();
+  const history = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const logining = async () => {
     try {
       await user.login(email, password);
-      history.push(SHOP_ROUTE);
+      history(SHOP_ROUTE);
     } catch (error) {
       alert(error);
     }

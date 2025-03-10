@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { ctx } from "../index"; 
+import { ctx } from '../store/context';
 import { fetchUserInfo } from "../http/userAPI"; 
 import { Avatar, Box, Typography, Paper, Divider, Grid, Button } from "@mui/material"; 
 

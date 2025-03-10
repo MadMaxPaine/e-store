@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import "../styles/cropper-avatar-shaper.css";
-import { ctx } from '../index';
+import { ctx } from '../store/context';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -22,12 +22,12 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { SHOP_ROUTE } from '../utils/consts';
 import { observer } from 'mobx-react-lite';
 const Registration = observer(() => {
  const { user } = useContext(ctx);
- const history = useHistory();
+ const history = useNavigate();
  const [email, setEmail] = useState('');
  const [password, setPassword] = useState('');
  const [passwordConfirm, setPasswordConfirm] = useState('');
@@ -54,11 +54,19 @@ const Registration = observer(() => {
   reader.readAsDataURL(files[0]);
  };
  const getCropData = () => {
-  if (typeof cropper !== "undefined") {
-   setCropData(cropper.getCroppedCanvas({ width: 150, height: 150 }).toDataURL("image/png"));
-  }
-  setOpen(false);
- };
+    if (cropper && cropper.getCroppedCanvas) {
+      const canvas = cropper.getCroppedCanvas({ width: 150, height: 150 });
+      if (canvas) {
+        setCropData(canvas.toDataURL("image/png"));
+      } else {
+        console.error("Failed to get canvas from cropper");
+      }
+    } else {
+      console.error("Cropper is not initialized or invalid");
+    }
+    setOpen(false);
+  };
+  
  const handleOpen = () => {
   setOpen(true);
  };
@@ -84,7 +92,7 @@ const Registration = observer(() => {
    regData.append('gender', gender);
    regData.append('avatar', cropData);
    user.registration(regData).then(regData => {
-    history.push(SHOP_ROUTE);
+    history(SHOP_ROUTE);
    });
   } catch (error) {
    alert(error);

@@ -28,8 +28,8 @@ app.use(
 app.use(fileUpload({}));
 app.use(
   cors({
-    credentials: true,
     origin: cfg.server.clientUrl,
+    credentials: true,    
   })
 );
 app.use("/api", router);
@@ -51,7 +51,7 @@ const start = async () => {
     await connection.query(`CREATE DATABASE IF NOT EXISTS \`e-store\`;`);
     await sequelize.authenticate();
     await sequelize.sync();
-    app.listen(PORT, () => console.log(`Server is starting on port: ${PORT}`));
+    app.listen(PORT, () => console.log(`Server is starting on port: ${PORT}`));    
   } catch (e) {
     console.log(e);
   }

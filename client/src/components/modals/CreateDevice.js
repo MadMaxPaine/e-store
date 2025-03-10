@@ -12,7 +12,7 @@ import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import Stack from "@mui/material/Stack";
 import { createDevice, fetchBrands, fetchTypes } from "../../http/deviceAPI";
-import { ctx } from "../../index";
+import { ctx } from '../../store/context';
 import { observer } from "mobx-react-lite";
 import { Grid } from "@mui/material";
 

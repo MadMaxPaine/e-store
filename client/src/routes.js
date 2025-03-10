@@ -18,7 +18,7 @@ export const authRoutes = [
  {
     path: USER_ROUTE, 
     Component: UserPage
-   }
+ }
 ];
 export const publicRoutes = [
  {

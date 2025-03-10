@@ -1,20 +1,16 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import App from './App';
-import DeviceStore from './store/DeviceStore';
-import UserStore from './store/UserStore';
 import { ThemeProvider } from './styles/theme-context';
-export const ctx = React.createContext(null); 
-ReactDOM.render(
+import { StoreProvider } from './store/context';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
   <React.StrictMode>
-    <ThemeProvider> 
-      <ctx.Provider value={{
-        user: new UserStore(),
-        device: new DeviceStore()
-      }}>
+    <ThemeProvider>
+      <StoreProvider>
         <App />
-      </ctx.Provider>
+      </StoreProvider>
     </ThemeProvider>
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 );

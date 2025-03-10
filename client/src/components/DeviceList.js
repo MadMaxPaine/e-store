@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { observer } from 'mobx-react-lite';
-import { ctx } from '../index';
+import { ctx } from '../store/context';
 import { DeviceItem } from './DeviceItem';
 import { Grid } from '@mui/material';
 export const DeviceList = observer(() => {

@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { ctx } from "../index";
+import { ctx } from '../store/context';
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -16,9 +16,10 @@ import {
   LOGIN_ROUTE,
   SHOP_ROUTE,
   USER_ROUTE,
+  BASKET_ROUTE
 } from "../utils/consts";
 import { observer } from "mobx-react-lite";
-import { useHistory } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import { useTheme } from "../styles/theme-context"; 
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import Brightness4Icon from "@mui/icons-material/Brightness4"; 
@@ -33,12 +34,12 @@ const NavBar = observer(() => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const history = useHistory();
+  const history = useNavigate();
 
   const logOut = async () => {
     handleClose();
     await user.logout();
-    history.push(SHOP_ROUTE);
+    history(SHOP_ROUTE);
   };
 
   return (
@@ -51,7 +52,7 @@ const NavBar = observer(() => {
             color="inherit"
             aria-label="menu"
             sx={{ maxWidth: "100%" }}
-            onClick={() => history.push(SHOP_ROUTE)}
+            onClick={() => history(SHOP_ROUTE)}
           >
             <AcUnitOutlinedIcon />
           </IconButton>
@@ -99,7 +100,7 @@ const NavBar = observer(() => {
                 </Tooltip>
               </IconButton>
             ) : (
-              <IconButton onClick={() => history.push(LOGIN_ROUTE)} sx={{ p: 0 }}>
+              <IconButton onClick={() => history(LOGIN_ROUTE)} sx={{ p: 0 }}>
                 <Tooltip title="Account">
                   <Paper
                     sx={{
@@ -136,7 +137,7 @@ const NavBar = observer(() => {
                   <MenuItem
                     onClick={() => {
                       handleClose();
-                      history.push(USER_ROUTE);
+                      history(USER_ROUTE);
                     }}
                   >
                     Profile
@@ -144,7 +145,15 @@ const NavBar = observer(() => {
                   <MenuItem
                     onClick={() => {
                       handleClose();
-                      history.push(ADMIN_ROUTE);
+                      history(BASKET_ROUTE);
+                    }}
+                  >
+                    Basket
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      handleClose();
+                      history(ADMIN_ROUTE);
                     }}
                   >
                     Admin panel
@@ -152,7 +161,7 @@ const NavBar = observer(() => {
                   <MenuItem
                     onClick={() => {
                       handleClose();
-                      history.push(SHOP_ROUTE);
+                      history(SHOP_ROUTE);
                     }}
                   >
                     Store
@@ -181,7 +190,7 @@ const NavBar = observer(() => {
                   <MenuItem
                     onClick={() => {
                       handleClose();
-                      history.push(USER_ROUTE);
+                      history(USER_ROUTE);
                     }}
                   >
                     Profile
@@ -189,10 +198,18 @@ const NavBar = observer(() => {
                   <MenuItem
                     onClick={() => {
                       handleClose();
-                      history.push(SHOP_ROUTE);
+                      history(SHOP_ROUTE);
                     }}
                   >
                     Store
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      handleClose();
+                      history(BASKET_ROUTE);
+                    }}
+                  >
+                    Basket
                   </MenuItem>
                   <MenuItem onClick={handleClose}>Setting</MenuItem>
                   <MenuItem onClick={() => logOut()}>Exit</MenuItem>
