@@ -144,7 +144,7 @@ const NavBar = observer(() => {
                   </MenuItem>
                   <MenuItem
                     onClick={() => {
-                      handleClose();
+                      handleClose();                      
                       history(BASKET_ROUTE);
                     }}
                   >

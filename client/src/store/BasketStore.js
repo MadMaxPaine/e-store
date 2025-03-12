@@ -1,61 +1,87 @@
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, action, runInAction } from "mobx";
+import {
+  addDeviceIntoBasket,
+  deleteDeviceFromBasket,
+} from "../http/basketAPI";
+import { fetchOneDevice } from "../http/deviceAPI";
 
 export default class Basket {
-    items = [];
+  items = [];
+ 
+  constructor() {
+    makeAutoObservable(this, {
+      fetchBasket: action,
+      setBasketItems: action,
+      addItem: action,
+      removeItem: action,
+      updateItemQuantity: action,
+      clearBasket: action,
+    });
+  }
 
-    constructor() {
-        makeAutoObservable(this);
-    }
+  // Завантажити дані кошика з сервера
+  async fetchBasket(data) {   
+      this.items = data;    
+  }
 
-    // Додати товар до кошика або збільшити кількість, якщо такий товар вже є
-    addItem(item) {
-        const existingItem = this.items.find((i) => i.id === item.id);
-        if (existingItem) {
-            this.updateItemQuantity(item.id, existingItem.quantity + 1);
-        } else {
-            this.items.push({ ...item, quantity: 1 });
-        }
+  async setBasketItems(data) {
+    this.items = [];  // Очищаємо масив перед оновленням
+    for (const item of data) {
+      try {
+        // Чекаємо на отримання кожного товару
+        const value = await fetchOneDevice(item.deviceId);
+  
+        // Перевіряємо, чи вже є цей товар в кошику
+        const existingItem = this.items.find((basketItem) => basketItem.id === value.id);
+  
+        if (!existingItem) {          
+          this.items.push({ ...value, quantity: item.quantity });
+        } 
+      } catch (err) {
+        console.error("Failed to fetch device:", err);
+      }
     }
+  
+    // Оновлюємо стейт
+    runInAction(() => {
+      this.items = [...this.items];  // Оновлюємо items після обробки
+    });
+  }
+  
 
-    // Видалити товар з кошика
-    removeItem(id) {
-        this.items = this.items.filter((item) => item.id !== id);
-    }
+  // Додати товар до кошика
+  async addItem(item, quantity = 1) {
+    await addDeviceIntoBasket(item.id, quantity);
+    runInAction(() => {
+      const existingItem = this.items.find((i) => i.id === item.id);
+      if (existingItem) {
+        existingItem.quantity += quantity;
+      } else {
+        this.items.push({ ...item, quantity });
+      }
+    });
+  }
 
-    // Видалити всі товари одного типу
-    removeAllItem(id) {
-        this.items = this.items.filter((item) => item.id !== id);
-    }
+  // Видалити товар з кошика
+  async removeItem(id) {
+    await deleteDeviceFromBasket(id);
+    runInAction(() => {
+      this.items = this.items.filter((item) => item.id !== id);
+    });
+  }
 
-    // Оновлення кількості товару в кошику
-    updateItemQuantity(id, quantity) {
-        if (quantity <= 0) {
-            this.removeItem(id); // Якщо кількість 0, видаляємо товар
-        } else {
-            const item = this.items.find((i) => i.id === id);
-            if (item) {
-                item.quantity = quantity;
-            }
-        }
-    }
+  // Отримати загальну вартість кошика
+  get totalPrice() {
+    return this.items.reduce((total, item) => total + item.price * item.quantity, 0);
+  }
 
-    // Отримати загальну вартість кошика
-    get totalPrice() {
-        return this.items.reduce((total, item) => total + item.price * item.quantity, 0);
-    }
+  // Отримати загальну кількість товарів у кошику
+  get totalQuantity() {
+    return this.items.reduce((total, item) => total + item.quantity, 0);
+  }
 
-    // Отримати загальну кількість товарів у кошику
-    get totalQuantity() {
-        return this.items.reduce((total, item) => total + item.quantity, 0);
-    }
-
-    // Оновлення кошика після отримання даних з API
-    setBasketItems(items) {
-        this.items = items;
-    }
-
-    // Очистити кошик
-    clearBasket() {
-        this.items = [];
-    }
+  // Очистити кошик
+  clearBasket() {    
+      this.items = [];   
+  }
 }

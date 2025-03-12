@@ -1,120 +1,81 @@
-const Basket = require("../models/basketModel");
-const Device = require("../models/deviceModel");
-const BasketDevice = require('../models/basketDeviceModel')
-const ApiError = require("../error/ApiErrors"); // Імпортуємо ваш клас ApiError
+const {Basket,BasketDevice,Device} = require('../models/models');
+const ApiError = require("../error/ApiErrors");
 
 class BasketService {
-  // Отримання всіх товарів в корзині
+  // Отримання всіх товарів у корзині користувача
   async getAll(userId) {
-      // Знаходимо кошик користувача
-      const basket = await Basket.findOne({ where: { userId, status: 'open' } });
-      if (!basket) throw new Error('Кошик порожній');
-  
-      // Отримуємо всі товари в кошику
-      const items = await BasketDevice.findAll({
-          where: { basketId: basket.id },
-          include: [{ model: Device, as: 'device' }] // Підключаємо дані про товар
-      });
-  
-      return items.map(item => ({
-          id: item.id,
-          name: item.device.name,
-          quantity: item.quantity,
-          price: item.price,
-          total: item.price * item.quantity
-      }));
+    console.log('Hallo Get');    
+    const basket = await Basket.findOne({ 
+      where: { userId },
+      include: [{ model: BasketDevice, as: "items" }]  // Використовуйте правильне ім'я асоціації
+    });
+    if (!basket) throw ApiError.notFound("Корзина не знайдена");   
+    return basket.items;  // Використовуємо "items", оскільки це асоціація
   }
 
   // Додавання товару до корзини
   async addDevice(userId, deviceId, quantity) {
     try {
-      const basketItem = await BasketDevice.findOne({ 
-        where: { basketId: basket.id, deviceId } 
-    });
-
-    if (basketItem) {
-        basketItem.quantity += quantity;
-        await basketItem.save();
-    } else {
-        const device = await Device.findByPk(deviceId);
-        if (!device) throw new Error('Товар не знайдено');
-
-        await BasketDevice.create({ 
-            basketId: basket.id, 
-            deviceId, 
-            quantity, 
-            price: device.price 
-        });
-    }
-
-    return { message: "Товар додано в кошик" };
+      console.log("Attempting to add device to basket:", { userId, deviceId, quantity });
+      
+      // Знаходимо або створюємо кошик для користувача
+      let basket = await Basket.findOne({ where: { userId } });
+  
+      if (!basket) {
+        console.log("No basket found, creating new basket for user:", userId);
+        basket = await Basket.create({ userId });
+      }
+  
+      // Отримуємо інформацію про товар, щоб отримати ціну
+      const device = await Device.findOne({ where: { id: deviceId } });
+  
+      if (!device) {
+        throw new Error("Device not found");
+      }
+  
+      const price = device.price; // Отримуємо ціну товару
+  
+      // Спробуємо знайти товар у кошику або створимо новий запис
+      const [basketDevice, created] = await BasketDevice.findOrCreate({
+        where: { basketId: basket.id, deviceId },
+        defaults: { quantity, price }, // Тепер передаємо price
+      });
+  
+      // Якщо товар вже існує, оновлюємо кількість
+      if (!created) {
+        console.log("Device already in basket, updating quantity");
+        basketDevice.quantity += +quantity;
+        await basketDevice.save(); // Зберігаємо оновлену кількість
+      }
+  
+      console.log("Device successfully added to basket");
+      return { message: "Товар успішно додано до корзини" };
     } catch (error) {
-      console.error("Error in addDevice:", error);
-      throw error instanceof ApiError
-        ? error
-        : ApiError.internalError("Error adding device to basket");
+      console.error("Error while adding device to basket:", error);
+      throw new Error("Failed to add device to basket");
     }
   }
-
   // Видалення товару з корзини
   async removeDevice(userId, deviceId) {
-    try {
-      await BasketDevice.destroy({ 
-        where: { basketId: basket.id, deviceId } 
-    });
+    const basket = await Basket.findOne({ where: { userId } });
+    if (!basket) throw ApiError.notFound("Корзина не знайдена");
 
-    return { message: "Товар видалено з кошика" };
-    } catch (error) {
-      console.error("Error in removeDevice:", error);
-      throw error instanceof ApiError
-        ? error
-        : ApiError.internalError("Error removing device from basket");
-    }
+    const deleted = await BasketDevice.destroy({ where: { basketId: basket.id, deviceId } });
+    if (!deleted) throw ApiError.notFound("Товар не знайдено у корзині");
+
+    return { message: "Товар успішно видалено з корзини" };
   }
-
-  // Оновлення кількості товару в корзині
-  async updateDeviceQuantity(userId, deviceId, quantity) {
-    try {
-      const item = await Basket.findOne({
-        where: { userId, deviceId },
-      });
-
-      if (!item) {
-        throw ApiError.notFound("Device not found in basket");
-      }
-
-      if (quantity < 1) {
-        throw ApiError.badRequest("Quantity must be at least 1");
-      }
-
-      item.quantity = quantity;
-      await item.save();
-
-      return { message: "Device quantity updated" };
-    } catch (error) {
-      console.error("Error in updateDeviceQuantity:", error);
-      throw error instanceof ApiError
-        ? error
-        : ApiError.internalError("Error updating device quantity");
-    }
-  }
-
+ 
   // Очищення корзини
   async clearBasket(userId) {
-    try {
-      const clearBasket = await Basket.findOne({
-        where: { userId },
-      });
-      clearBasket.status="open";
-      clearBasket.save();
-      return { message: "Basket cleared" };
-    } catch (error) {
-      console.error("Error in clearBasket:", error);
-      throw error instanceof ApiError
-        ? error
-        : ApiError.internalError("Error clearing basket");
-    }
+    console.log(userId);
+    
+    const basket = await Basket.findOne({ where: { userId } });
+    if (!basket) throw ApiError.notFound("Корзина не знайдена");
+
+    await BasketDevice.destroy({ where: { basketId: basket.id } });
+    return { message: "Корзина успішно очищена" };
   }
 }
 
-module.exports = new BasketService();
+module.exports = new BasketService;

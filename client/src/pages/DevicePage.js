@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Card,
@@ -12,10 +12,10 @@ import {
   Rating,
   CircularProgress,
   useTheme,
+  TextField,
 } from "@mui/material";
-import { 
-  BASKET_ROUTE
-} from "../utils/consts";
+import { BASKET_ROUTE } from "../utils/consts";
+import { addDeviceIntoBasket } from "../http/basketAPI";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useParams } from "react-router-dom";
 import { fetchOneDevice } from "../http/deviceAPI";
@@ -25,11 +25,13 @@ import { ctx } from "../store/context"; // Import your context for the basket
 const DevicePage = observer(() => {
   const [device, setDevice] = useState({ info: [] });
   const [loading, setLoading] = useState(true);
+  const [quantity, setQuantity] = useState(1); // Стейт для кількості
   const { id } = useParams();
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
-  const { basket } = useContext(ctx); // Get basket from context
-  const history = useNavigate(ctx);
+  const { user } = useContext(ctx); // Get basket and user from context
+  const history = useNavigate(); // Use navigate without ctx
+
   useEffect(() => {
     let isMounted = true;
     setLoading(true);
@@ -50,12 +52,28 @@ const DevicePage = observer(() => {
     return () => {
       isMounted = false;
     };
-  }, [id]);
+  }, [id, user]);
 
-  // Add item to the basket
-  const addToBasket = () => {
-    basket.addItem(device); // Call addItem from basket store
-    history(BASKET_ROUTE);
+  const handleQuantityChange = (event) => {
+    const value = event.target.value;
+    if (value > 0) {
+      setQuantity(value); // Оновлюємо кількість, якщо значення більше 0
+    }
+  };
+
+  const addToBasket = async (device) => {
+    try {
+      if (!user) {
+        console.error("User is not authenticated");
+        return;
+      }              
+      // Викликаємо API для додавання товару в кошик з урахуванням кількості
+      await addDeviceIntoBasket(user, device.id, quantity);      
+      // Перенаправлення на сторінку кошика
+      history(BASKET_ROUTE);
+    } catch (err) {
+      console.error("Failed to add item to basket", err);
+    }
   };
 
   if (loading) {
@@ -174,6 +192,23 @@ const DevicePage = observer(() => {
             <Typography variant="h4" fontWeight={700}>
               ${device.price}
             </Typography>
+
+            {/* Поле для вибору кількості товару */}
+            <Box sx={{ mt: 2 }}>
+              <TextField
+                label="Quantity"
+                type="number"
+                value={quantity}
+                onChange={handleQuantityChange}
+                InputProps={{
+                  inputProps: { min: 1 } // мінімум 1
+                }}
+                fullWidth
+                variant="outlined"
+                sx={{ mb: 2 }}
+              />
+            </Box>
+
             <Button
               variant="contained"
               startIcon={<ShoppingCartIcon />}
@@ -186,7 +221,7 @@ const DevicePage = observer(() => {
                   background: isDarkMode ? "#333" : "#e3f2fd",
                 },
               }}
-              onClick={addToBasket} // Add to basket handler
+              onClick={() => addToBasket(device)} // Add to basket handler
             >
               Add to Basket
             </Button>

@@ -1,14 +1,14 @@
 const Router = require('express');
 const basketController = require('../controllers/basketController');
 const authMiddleware = require('../middleware/authMiddleware');
-const { body, query } = require('express-validator');
+const { body, param } = require('express-validator');
 const validateQuery = require('../middleware/validateQuery'); // Middleware для валідації запитів
 
 const router = new Router();
 
 // Отримання всіх товарів в корзині
 router.get(
-  '/:id',
+  '/:userId',
   authMiddleware,
   basketController.getAll
 );
@@ -17,34 +17,21 @@ router.get(
 router.post(
   '/add',
   authMiddleware,
-  body('deviceId').isInt().withMessage('deviceId must be an integer'),
-  body('quantity').isInt({ min: 1 }).withMessage('Quantity must be a positive integer'),
-  validateQuery,  // Middleware для валідації
-  basketController.addDevice
+   validateQuery,  
+    basketController.addDevice   
 );
 
 // Видалення товару з корзини
 router.delete(
-  '/remove',
-  authMiddleware,
-  body('deviceId').isInt().withMessage('deviceId must be an integer'),
-  validateQuery,  // Middleware для валідації
+  '/remove/:deviceId',
+  authMiddleware,  
+  validateQuery,
   basketController.removeDevice
-);
-
-// Оновлення кількості товару в корзині
-router.put(
-  '/update',
-  authMiddleware,
-  body('deviceId').isInt().withMessage('deviceId must be an integer'),
-  body('quantity').isInt({ min: 1 }).withMessage('Quantity must be a positive integer'),
-  validateQuery,  // Middleware для валідації
-  basketController.updateDeviceQuantity
 );
 
 // Очищення корзини
 router.delete(
-  '/clear',
+  '/clear/:userId',
   authMiddleware,
   basketController.clearBasket
 );
