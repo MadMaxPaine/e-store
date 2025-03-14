@@ -1,6 +1,7 @@
 import { makeAutoObservable } from 'mobx';
 import axios from 'axios';
 const { login, registration, logout } = require('../http/userAPI');
+const {REACT_APP_API_URL} = require('../utils/consts');
 
 export default class UserStore {
   constructor() {
@@ -74,7 +75,7 @@ export default class UserStore {
     if (this._isLoading) return;
     this.setLoading(true);
     try {    
-      const res = await axios.get(`${process.env.REACT_APP_API_URL}api/user/refresh`, { withCredentials: true }); 
+      const res = await axios.get(`${REACT_APP_API_URL}api/user/refresh`, { withCredentials: true }); 
       // Збереження токенів та інформації користувача
       localStorage.setItem('token', res.data.accessToken);
       localStorage.setItem('refreshToken', res.data.refreshToken); // Зберігаємо refreshToken, якщо потрібно

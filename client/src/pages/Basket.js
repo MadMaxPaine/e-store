@@ -5,12 +5,15 @@ import { getDevicesInBasket, clearBasket } from "../http/basketAPI";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import { runInAction } from "mobx"; 
+import { REACT_APP_API_URL } from "../utils/consts";
+
 const Basket = observer(() => {
-  const { basket, user } = useContext(ctx); // отримуємо basket і user з контексту
+  const { basket, user } = useContext(ctx); 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
+  useEffect(() => {    
     const fetchBasket = async (id) => {
       if (!id) {
         setError("User not authenticated");
@@ -18,8 +21,10 @@ const Basket = observer(() => {
       }
       setIsLoading(true);
       try {
-        const data = await getDevicesInBasket(id).then(); // отримуємо дані кошика
-        await basket.setBasketItems(data);
+        let data = await getDevicesInBasket(id);
+        runInAction(() => {
+          basket.setBasketItems(data); 
+        });
       } catch (err) {
         setError("Failed to fetch basket");
         console.error(err);
@@ -27,18 +32,18 @@ const Basket = observer(() => {
         setIsLoading(false);
       }
     };
-    // Перевірка на наявність user._user.id
+
     if (user?._user?.id) {
       fetchBasket(user._user.id);
     } else {
       setError("User not authenticated");
     }
-  }, [basket, user?._user?.id]); // залежність тільки від user.id
+  }, [basket, user?._user?.id]);
 
   const handleRemoveItem = async (id) => {
     setIsLoading(true);
     try {
-      basket.removeItem(id);
+      await basket.removeItem(id);
     } catch (err) {
       setError("Failed to remove item");
     } finally {
@@ -47,17 +52,16 @@ const Basket = observer(() => {
   };
 
   const handleClearBasket = async () => {
-    // Перевірка, чи є користувач
     if (!user?._user?.id) {
       setError("User not authenticated");
       return;
     }
     setIsLoading(true);
     try {
-      // Викликаємо API для очищення кошика
       await clearBasket(user._user.id);
-      basket.clearBasket();
-      // Очищаємо локальний кошик MobX
+      runInAction(() => {
+        basket.clearBasket(); 
+      });
     } catch (err) {
       setError("Failed to clear basket");
       console.error("Error clearing basket:", err);
@@ -89,7 +93,6 @@ const Basket = observer(() => {
           {basket.items.map((item) => (
             <Box
               key={item.id}
-              name={item.name}
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
@@ -99,7 +102,7 @@ const Basket = observer(() => {
               }}
             >
               <img
-                src={process.env.REACT_APP_API_URL + item.img}
+                src={REACT_APP_API_URL + item.img}
                 alt={item.name}
                 style={{
                   width: "80px",
@@ -110,10 +113,7 @@ const Basket = observer(() => {
                 }}
               />
               <Box sx={{ flex: 1 }}>
-                <Typography
-                  variant="h6"
-                  sx={{ fontWeight: "bold", color: "#555" }}
-                >
+                <Typography variant="h6" sx={{ fontWeight: "bold", color: "#555" }}>
                   {item.name}
                 </Typography>
                 <Typography
@@ -133,7 +133,6 @@ const Basket = observer(() => {
                   padding: "8px 0",
                 }}
               >
-                {/* Quantity Display */}
                 <Typography
                   variant="body1"
                   sx={{
@@ -150,8 +149,6 @@ const Basket = observer(() => {
                 >
                   {item.quantity}
                 </Typography>
-
-                {/* Remove Button */}
                 <Button
                   variant="contained"
                   sx={{
@@ -168,7 +165,7 @@ const Basket = observer(() => {
                       boxShadow: "0 6px 12px rgba(0, 0, 0, 0.3)",
                     },
                     "&:active": {
-                      transform: "scale(0.98)", // Slight button shrink when clicked
+                      transform: "scale(0.98)", 
                     },
                   }}
                   onClick={() => handleRemoveItem(item.id)}
@@ -188,18 +185,20 @@ const Basket = observer(() => {
           Your basket is empty
         </Typography>
       )}
-      <Button
-        variant="contained"
-        sx={{
-          display: "block",
-          margin: "20px auto",
-          backgroundColor: "#FF5722",
-          color: "white",
-        }}
-        onClick={handleClearBasket}
-      >
-        Clear Basket
-      </Button>
+      {basket.items.length > 0 && (
+        <Button
+          variant="contained"
+          sx={{
+            display: "block",
+            margin: "20px auto",
+            backgroundColor: "#FF5722",
+            color: "white",
+          }}
+          onClick={handleClearBasket}
+        >
+          Clear Basket
+        </Button>
+      )}
     </Box>
   );
 });

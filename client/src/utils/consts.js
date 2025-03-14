@@ -6,3 +6,4 @@ export const BASKET_ROUTE = '/basket';
 export const DEVICE_ROUTE = '/device';
 export const USER_ROUTE = '/user';
 export const ORDER_ROUTE = '/order';
+export const REACT_APP_API_URL='http://localhost:5000/';

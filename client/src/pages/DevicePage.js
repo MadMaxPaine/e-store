@@ -21,7 +21,7 @@ import { useParams } from "react-router-dom";
 import { fetchOneDevice } from "../http/deviceAPI";
 import { observer } from "mobx-react-lite";
 import { ctx } from "../store/context"; // Import your context for the basket
-
+const {REACT_APP_API_URL} = require('../utils/consts');
 const DevicePage = observer(() => {
   const [device, setDevice] = useState({ info: [] });
   const [loading, setLoading] = useState(true);
@@ -114,7 +114,7 @@ const DevicePage = observer(() => {
               <CardMedia
                 component="img"
                 height="300"
-                image={process.env.REACT_APP_API_URL + device.img}
+                image={REACT_APP_API_URL + device.img}
                 alt={device.name}
                 sx={{
                   objectFit: "contain",

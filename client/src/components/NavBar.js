@@ -23,7 +23,7 @@ import {  useNavigate } from "react-router-dom";
 import { useTheme } from "../styles/theme-context"; 
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import Brightness4Icon from "@mui/icons-material/Brightness4"; 
-
+const {REACT_APP_API_URL} = require('../utils/consts');
 const NavBar = observer(() => {
   const { user } = useContext(ctx);
   const { toggleTheme, theme } = useTheme();
@@ -91,7 +91,7 @@ const NavBar = observer(() => {
                         alt={user._user.firstName || "User Avatar"}
                         src={
                           user._user.avatar
-                            ? `${process.env.REACT_APP_API_URL}/${user._user.avatar}`
+                            ? `${REACT_APP_API_URL}/${user._user.avatar}`
                             : ""
                         }
                       />

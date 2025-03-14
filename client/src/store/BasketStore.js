@@ -1,8 +1,5 @@
 import { makeAutoObservable, action, runInAction } from "mobx";
-import {
-  addDeviceIntoBasket,
-  deleteDeviceFromBasket,
-} from "../http/basketAPI";
+import { addDeviceIntoBasket, deleteDeviceFromBasket } from "../http/basketAPI";
 import { fetchOneDevice } from "../http/deviceAPI";
 
 export default class Basket {
@@ -21,33 +18,31 @@ export default class Basket {
 
   // Завантажити дані кошика з сервера
   async fetchBasket(data) {   
-      this.items = data;    
+    runInAction(() => {
+      this.items = data;
+    });
   }
 
   async setBasketItems(data) {
-    this.items = [];  // Очищаємо масив перед оновленням
+    const newItems = [];
+
     for (const item of data) {
       try {
-        // Чекаємо на отримання кожного товару
         const value = await fetchOneDevice(item.deviceId);
-  
-        // Перевіряємо, чи вже є цей товар в кошику
-        const existingItem = this.items.find((basketItem) => basketItem.id === value.id);
-  
-        if (!existingItem) {          
-          this.items.push({ ...value, quantity: item.quantity });
-        } 
+        const existingItem = newItems.find((basketItem) => basketItem.id === value.id);
+
+        if (!existingItem) {
+          newItems.push({ ...value, quantity: item.quantity });
+        }
       } catch (err) {
         console.error("Failed to fetch device:", err);
       }
     }
-  
-    // Оновлюємо стейт
+
     runInAction(() => {
-      this.items = [...this.items];  // Оновлюємо items після обробки
+      this.items = newItems;
     });
   }
-  
 
   // Додати товар до кошика
   async addItem(item, quantity = 1) {
@@ -81,7 +76,9 @@ export default class Basket {
   }
 
   // Очистити кошик
-  clearBasket() {    
-      this.items = [];   
+  clearBasket() {
+    runInAction(() => {
+      this.items = [];
+    });
   }
 }

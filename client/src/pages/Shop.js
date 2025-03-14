@@ -8,7 +8,6 @@ import { fetchBrands, fetchTypes, fetchDevices } from '../http/deviceAPI';
 import { Pages } from '../components/Pages';
 import Grid from '@mui/material/Grid';
 
-
 const Shop = observer(() => {
  const { device } = useContext(ctx);
  useEffect(() => {
@@ -21,7 +20,8 @@ const Shop = observer(() => {
    device.setDevices(data.rows);
    device.setTotalCount(data.count);
   });
- }, [device.page, device.selectedType, device.selectedBrand, device])
+ }, [device.page, device.selectedType, device.selectedBrand, device]);
+
  return (
   <Grid
    container
@@ -34,7 +34,7 @@ const Shop = observer(() => {
     md={2}
     p={1}
    >
-    <TypeBar></TypeBar>
+    <TypeBar id="type-bar" /> {/* Додано id */}
    </Grid>
    <Grid
     container
@@ -43,12 +43,19 @@ const Shop = observer(() => {
     md={10}
    >
     <Grid container >
-     <Grid container direction="row" sx={{ verticalAlign: "left" }} p={1} ><BrandBar /></Grid>
-     <Grid container direction="row" mt={2}><DeviceList /></Grid>
-     <Grid container direction="row" mt={2} sx={{ alignItems: "center", justifyContent: "center", }} p={1}><Pages /></Grid>
+     <Grid container direction="row" sx={{ verticalAlign: "left" }} p={1}>
+       <BrandBar id="brand-bar" /> {/* Додано id */}
+     </Grid>
+     <Grid container direction="row" mt={2}>
+       <DeviceList id="device-list" /> {/* Додано id */}
+     </Grid>
+     <Grid container direction="row" mt={2} sx={{ alignItems: "center", justifyContent: "center", }} p={1}>
+       <Pages id="pages" /> {/* Додано id */}
+     </Grid>
     </Grid>
    </Grid>
   </Grid>
  );
 });
+
 export default Shop;

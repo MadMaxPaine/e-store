@@ -1,13 +1,13 @@
 import axios from "axios";
-
+const {REACT_APP_API_URL} = require('../utils/consts');
 // Створення інстансів для зв'язку з API
 const $host = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
+  baseURL: REACT_APP_API_URL,
 });
 
 const $authhost = axios.create({
   withCredentials: true,
-  baseURL: process.env.REACT_APP_API_URL,
+  baseURL:REACT_APP_API_URL,
 });
 
 // Перехоплювач для додавання токена в заголовки авторизації

@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { ctx } from '../store/context';
 import { fetchUserInfo } from "../http/userAPI"; 
 import { Avatar, Box, Typography, Paper, Divider, Grid, Button } from "@mui/material"; 
-
+const {REACT_APP_API_URL} = require('../utils/consts');
 const UserInfo = () => {
   const { user } = useContext(ctx);
   const [userInfo, setUserInfo] = useState({
@@ -26,7 +26,7 @@ const UserInfo = () => {
         <Avatar
           sx={{ width: 120, height: 120, margin: "auto" }}
           alt={user._user.firstName || "User Avatar"}
-          src={user._user.avatar ? `${process.env.REACT_APP_API_URL}/${user._user.avatar}` : ""}
+          src={user._user.avatar ? `${REACT_APP_API_URL}/${user._user.avatar}` : ""}
         />
         <Typography variant="h4" sx={{ marginTop: 2 }}>
           {userInfo.firstName} {userInfo.secondName}
