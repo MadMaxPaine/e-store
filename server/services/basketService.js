@@ -3,8 +3,7 @@ const ApiError = require("../error/ApiErrors");
 
 class BasketService {
   // Отримання всіх товарів у корзині користувача
-  async getAll(userId) {
-    console.log('Hallo Get');    
+  async getAll(userId) {  
     const basket = await Basket.findOne({ 
       where: { userId },
       include: [{ model: BasketDevice, as: "items" }]  // Використовуйте правильне ім'я асоціації
