@@ -21,3 +21,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+#docker-composers
+docker-compose.yml
+/client/docker-compose.yml

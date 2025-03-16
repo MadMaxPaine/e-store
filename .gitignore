@@ -10,3 +10,7 @@ server/static/*.png
 
 #client/dist
 client/dist
+
+#docker-composers
+server/docker-compose.yml
+docker-compose.yml
