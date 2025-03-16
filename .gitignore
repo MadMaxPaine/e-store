@@ -13,4 +13,5 @@ client/dist
 
 #docker-composers
 server/docker-compose.yml
+client/docker-compose.yml
 docker-compose.yml
