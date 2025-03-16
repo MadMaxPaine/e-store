@@ -5,8 +5,8 @@ import { CircularProgress, CssBaseline } from '@mui/material';
 import { ctx } from './store/context';
 import AppRouter from './components/AppRouter';
 import NavBar from './components/NavBar';
-import { ThemeProvider } from './styles/theme-context'; // Імпортуємо ThemeProvider
-import { useTheme } from './styles/theme-context'; // Імпортуємо useTheme
+import { ThemeProvider } from './styles/theme-context';
+import { useTheme } from './styles/theme-context';
 
 const App = observer(() => {
   const { user } = useContext(ctx);
@@ -14,13 +14,14 @@ const App = observer(() => {
 
   useEffect(() => {
     const authenticateUser = async () => {
-      if (localStorage.getItem('token')) {
+      const token = localStorage.getItem('token');
+      if (token) {
         try {
           await user.checkAuth();
         } catch (error) {
           console.error('Authentication error:', error);
-          localStorage.removeItem('token'); // Очистити токен при помилці
-          user.setIsAuth(false); // Встановити аутентифікацію як false
+          localStorage.removeItem('token');
+          user.setIsAuth(false);
         }
       }
     };
@@ -29,14 +30,18 @@ const App = observer(() => {
   }, [user]);
 
   if (user._isLoading) {
-    return <CircularProgress style={{ position: 'absolute', top: '50%', left: '50%' }} />;
+    return (
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+        <CircularProgress />
+      </div>
+    );
   }
 
   return (
-    <ThemeProvider value={{ theme, toggleTheme }}> {/* Передаємо theme та toggleTheme в ThemeProvider */}
+    <ThemeProvider value={{ theme, toggleTheme }}>
       <BrowserRouter>
-        <CssBaseline /> {/* Додаємо базові стилі для коректного відображення тем */}
-        <NavBar toggleTheme={toggleTheme} /> {/* Передаємо функцію для зміни теми в NavBar */}
+        <CssBaseline />
+        <NavBar toggleTheme={toggleTheme} />
         <AppRouter />
       </BrowserRouter>
     </ThemeProvider>

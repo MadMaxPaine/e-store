@@ -2,7 +2,8 @@ import React, { useContext, useState, useEffect } from "react";
 import { ctx } from '../store/context';
 import { fetchUserInfo } from "../http/userAPI"; 
 import { Avatar, Box, Typography, Paper, Divider, Grid, Button } from "@mui/material"; 
-const {REACT_APP_API_URL} = require('../utils/consts');
+const { REACT_APP_API_URL } = require('../utils/consts');
+
 const UserInfo = () => {
   const { user } = useContext(ctx);
   const [userInfo, setUserInfo] = useState({
@@ -14,19 +15,23 @@ const UserInfo = () => {
   });
 
   useEffect(() => {
-    const userId = user._user.id;
-    fetchUserInfo(userId).then((data) => {
-      setUserInfo(data);
-    });
+    const userId = user._user?.id; // Перевірка на наявність userId
+    if (userId) {
+      fetchUserInfo(userId)
+        .then((data) => setUserInfo(data))
+        .catch((error) => console.error("Error fetching user info:", error)); // Обробка помилок
+    }
   }, [user]);
+
+  const avatarSrc = userInfo.avatar ? `${REACT_APP_API_URL}/${userInfo.avatar}` : '/default-avatar.png'; // Використання дефолтного аватара
 
   return (
     <Box sx={{ maxWidth: 600, margin: "auto", padding: 3 }}>
       <Paper sx={{ padding: 3, textAlign: "center" }}>
         <Avatar
           sx={{ width: 120, height: 120, margin: "auto" }}
-          alt={user._user.firstName || "User Avatar"}
-          src={user._user.avatar ? `${REACT_APP_API_URL}/${user._user.avatar}` : ""}
+          alt={userInfo.firstName || "User Avatar"}
+          src={avatarSrc}
         />
         <Typography variant="h4" sx={{ marginTop: 2 }}>
           {userInfo.firstName} {userInfo.secondName}

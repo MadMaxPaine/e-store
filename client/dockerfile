@@ -1,0 +1,29 @@
+# Вибір базового образу для Node.js
+FROM node:18 AS build
+
+# Встановлюємо робочу директорію
+WORKDIR /app
+
+# Копіюємо package.json і package-lock.json
+COPY package.json package-lock.json ./
+
+# Встановлюємо всі залежності (включаючи devDependencies)
+RUN npm install
+
+# Копіюємо ВСІ файли фронтенду
+COPY . .
+
+# Виконуємо збірку фронтенду
+RUN npm run build
+
+# Вибір образу для продакшн
+FROM nginx:alpine
+
+# Копіюємо зібраний фронтенд в nginx
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Виставляємо порт для nginx
+EXPOSE 80
+
+# Стартуємо nginx
+CMD ["nginx", "-g", "daemon off;"]

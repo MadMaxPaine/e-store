@@ -4,6 +4,9 @@ const webpack = require('webpack');
 const CompressionPlugin = require('compression-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const Dotenv = require('dotenv-webpack');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
   entry: './src/index.js',
@@ -31,7 +34,27 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
+        use: [
+          MiniCssExtractPlugin.loader, // Витягнути CSS у окремі файли
+          'css-loader',
+        ],
+      },
+      {
+        test: /\.(woff|woff2|eot|ttf|otf)$/,
+        type: 'asset/resource', // Встановлено для Webpack 5
+        generator: {
+          filename: 'fonts/[name].[hash][ext]',
+        },
+      },
+      {
+        test: /\.(jpg|jpeg|png|gif|svg)$/i,
+        type: 'asset/resource', // Встановлено для Webpack 5
+        generator: {
+          filename: 'images/[name].[hash][ext]',
+        },
+        use: [
+          'image-webpack-loader', // Оптимізація зображень
+        ],
       },
     ],
   },
@@ -47,14 +70,28 @@ module.exports = {
       test: /\.(js|css)$/,
       algorithm: 'gzip',
     }),
-    new BundleAnalyzerPlugin(), // Аналізатор бандлу
+    new MiniCssExtractPlugin({
+      filename: '[name].[contenthash].css', // Кешування CSS
+    }),
     new Dotenv(), // Завантаження змінних оточення з .env
-  ],
+    new CleanWebpackPlugin(), // Очищення dist перед новою збіркою
+    process.env.NODE_ENV === 'development' && new BundleAnalyzerPlugin(),
+  ].filter(Boolean),
   optimization: {
     splitChunks: {
       chunks: 'all', // Увімкнення Code Splitting
+      maxSize: 250000, // Лімітуємо максимальний розмір бандлів для кожного файлу
     },
-    minimize: true,
+    minimize: true, // Мінімізація JS
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          compress: {
+            drop_console: true, // Видалити console.log для продакшн
+          },
+        },
+      }),
+    ],
   },
   devServer: {
     static: path.resolve(__dirname, 'dist'),

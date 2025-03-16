@@ -1,0 +1,20 @@
+# Використовуємо офіційний образ Node.js
+FROM node:18
+
+# Встановлюємо робочу директорію
+WORKDIR /app
+
+# Копіюємо package.json і package-lock.json
+COPY package.json package-lock.json ./
+
+# Встановлюємо залежності
+RUN npm install --omit=dev
+
+# Копіюємо весь код
+COPY . .
+
+# Відкриваємо порт із змінної середовища
+EXPOSE 5000
+
+# Стартуємо сервер
+CMD ["npm", "start"]
